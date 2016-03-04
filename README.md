@@ -8,20 +8,18 @@ Installation
 ------------
 
 > git clone https://github.com/javierrodriguezcuevas/doctrine-workbench
-
 > cd doctrine-workbench
-
 > composer install
-
 > npm install
-
 > grunt
-
 > bin/console doctrine:database:create
-
 > bin/console doctrine:schema:load
-
 > bin/console fixture:load
+
+Demo
+----
+
+http://doctrineworkbench-jrodriguez.rhcloud.com/
 
 Tests
 -----
