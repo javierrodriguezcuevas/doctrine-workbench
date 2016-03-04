@@ -23,6 +23,11 @@ Installation
 
 > bin/console fixture:load
 
+Demo
+----
+
+http://doctrineworkbench-jrodriguez.rhcloud.com/
+
 Tests
 -----
 
