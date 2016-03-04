@@ -1,0 +1,52 @@
+<script type="text/ng-template" id="modalLoadSchema.html">
+    <div class="modal-header">
+        <h3>{{ 'title.load_schema' | translate }}</h3>
+    </div>
+    <form novalidate name="form" class="form-horizontal" ng-submit="ok(form)">
+        <div class="modal-body">
+            <div ng-show="!showTable">
+                <img ng-src='{{ loadingGif }}' />
+                <span>{{ 'label.loading' | translate }}</span>
+            </div>
+            <table class="table"
+                ng-show="showTable">
+                <thead>
+                    <th>
+                        {{ 'label.name' | translate }}
+                    </th>
+                    <th></th>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="schema in schemas">
+                        <td>
+                            {{ schema.name }}
+                        </td>
+                        <td class="text-right">
+                            <button class="btn btn-info btn-sm ladda-button"
+                                data-style="zoom-in"
+                                ladda="loading"
+                                ng-click="loadSchema(schema.id)"
+                                tooltip-placement="top" 
+                                tooltip-append-to-body="true" 
+                                tooltip="{{ 'label.load' | translate }}">
+                                <i class="glyphicon glyphicon-cloud-download"> </i>
+                            </button>
+                            <button class="btn btn-danger btn-sm ladda-button"
+                                data-style="zoom-in"
+                                ladda="loading"
+                                ng-click="removeSchema(schema.id)"
+                                tooltip-placement="top" 
+                                tooltip-append-to-body="true" 
+                                tooltip="{{ 'label.delete' | translate }}">
+                                <i class="glyphicon glyphicon-remove"> </i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" ng-click="close()">{{ 'label.close' | translate }}</button>
+        </div>
+    </form>
+</script>

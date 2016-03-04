@@ -1,0 +1,110 @@
+<div class="row">
+    <div class="col-lg-6">
+        <div class="form-group">
+            <div class="btn-group" role="group">
+                <button class="btn btn-default" type="button" 
+                    ng-click="clearWorkbenchConfirmation()" 
+                    tooltip-placement="top" 
+                    tooltip-append-to-body="true" 
+                    tooltip="{{ 'label.new' | translate }}">
+                    <i class="glyphicon glyphicon-file"> </i>
+                </button>
+                <a id="btn-list-schemas" class="btn btn-default"
+                    ng-click="listSchemas()"
+                    tooltip-placement="top" 
+                    tooltip-append-to-body="true" 
+                    tooltip="{{ 'label.open' | translate }}">
+                    <i class="icon icon-folder-open"> </i>
+                </a>
+                <a id="btn-save" class="btn btn-default ladda-button"
+                    data-style="zoom-in"
+                    ladda="loading"
+                    ng-click="saveSchema()"
+                    tooltip-placement="top" 
+                    tooltip-append-to-body="true" 
+                    tooltip="{{ 'label.save' | translate }}">
+                    <i class="icon icon-floppy"> </i>
+                </a>
+                <button class="btn btn-default" type="button"
+                    ng-click="sendSchema()"
+                    tooltip-placement="top" 
+                    tooltip-append-to-body="true" 
+                    tooltip="{{ 'label.create' | translate }}">
+                    <i class="icon icon-magic"> </i>
+                </button>
+            </div>
+            <!--<button class="btn btn-primary" ng-click="showJson()" type="button">Mostrar json</button>-->
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="form-group text-right">
+            <button class="btn btn-primary" ng-click="newEntity()" type="button">
+                <i class="icon icon-plus"> </i>
+                {{ 'label.new_entity' | translate }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="slider-vertical-container">
+    <span slider ng-model="currentZoom" on-slide="updateZoom()" ng-click="updateZoom()" min="0.1" step="0.01" precision="2" max="1.9" orientation="vertical" value="currentZoom" slider-tooltip="hide"></span>
+</div>
+<div id="workbench-wrapper">
+    <div id="workbench">
+        <div plumb-item class="item" ng-repeat="entity in entities" ng-style="{'left': entity.x, 'top': entity.y }" data-identifier="{{entity.id}}">
+            <div class="item-header-wrapper">
+                <div class="item-move"></div>
+                <div class="item-header">
+                    <button type="button" class="close" ng-click="removeEntityConfirmation(entity.id)"><span>×</span>&nbsp;</button>
+                </div>
+            </div>
+            <div class="col-lg-12 item-container">
+                <div class="form-group">
+                    <button type="button"
+                            class="btn btn-primary btn-xs pull-left" 
+                            ng-click="editEntity(entity.id)"
+                            tooltip-placement="top" 
+                            tooltip-append-to-body="true" 
+                            tooltip="{{ 'label.edit_entity' | translate }}">
+                        <i class="icon icon-edit"></i>
+                    </button>
+                    <label class="label-align-xs">{{ entity.entityName }}</label>
+                </div>
+                <div  class="form-group">
+                    <button type="button"
+                            class="btn btn-info btn-xs pull-left"
+                            ng-click="editFields(entity.id)"
+                            tooltip-placement="top" 
+                            tooltip-append-to-body="true" 
+                            tooltip="{{ 'label.edit_fields' | translate }}">
+                        <i class="icon icon-list"></i>
+                    </button>
+                    <label class="label-align-xs">Campos:&nbsp;</label>{{ entity.fields.length }}
+                </div>
+                <div class="clearfix"></div>
+                <div class="btn-group btn-group-justified" data-identifier="{{entity.id}}">
+                    <span plumb-connect-one-to-one class="one-to-one btn btn-xs no-draggable" ng-disabled="entity.fields.length == 0">
+                        <i class="icon icon-tree"></i>
+                    </span>
+                    <span plumb-connect-one-to-many class="one-to-many btn btn-xs no-draggable" ng-disabled="entity.fields.length == 0">
+                        <i class="icon icon-tree2"></i>
+                    </span>
+                    <span plumb-connect-many-to-many class="many-to-many btn btn-xs no-draggable" ng-disabled="entity.fields.length == 0">
+                        <i class="icon icon-tree3"></i>
+                    </span>
+                </div>
+                <div class="clearfix"><br/></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div ng-include="'fieldsOptionsContent.html'"></div>
+<div ng-include="'manyToManyContent.html'"></div>
+<div ng-include="'modalEditFieldsContent.html'"></div>
+<div ng-include="'modalLoadSchema.html'"></div>
+<div ng-include="'modalNewEditEntityContent.html'"></div>
+<div ng-include="'modalNewEditRelationContent.html'"></div>
+<div ng-include="'modalTemplate.html'"></div>
+<div ng-include="'oneToManyContent.html'"></div>
+<div ng-include="'oneToOneContent.html'"></div>

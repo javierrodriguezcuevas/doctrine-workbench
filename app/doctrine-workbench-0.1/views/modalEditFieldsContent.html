@@ -1,0 +1,30 @@
+<script type="text/ng-template" id="modalEditFieldsContent.html">
+	<div class="modal-header">
+            <h3>{{ 'title.edit_fields' | translate }} {{ title }}</h3>
+	</div>
+	<form novalidate name="form" class="form-horizontal" 
+            ng-submit="ok(form)">
+            <div class="modal-body">
+                <button type="button" class="btn btn-success btn-sm" 
+                    ng-click="addField()">
+                    <i class="icon icon-plus"> </i>
+                    {{ 'label.new_field' | translate }}
+                </button>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <span ng-include src="'fieldsOptionsContent.html'"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" 
+                    ng-click="cancel()">
+                    {{ 'label.cancel' | translate }}
+                </button>
+                <button type="submit" class="btn btn-primary"
+                    ng-disabled="form.$invalid">
+                    {{ 'label.ok' | translate }}
+                </button>
+            </div>
+	</form>
+</script>
