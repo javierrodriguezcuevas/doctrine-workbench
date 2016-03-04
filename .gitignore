@@ -1,3 +1,6 @@
 nbproject/
 web/temp/
 web/dist/
+vendor/
+node_modules/
+assets/
