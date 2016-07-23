@@ -9,8 +9,11 @@ DoctrineWorkbenchController.controller('ModalNewEditEntityInstanceCtrl', [ '$sco
         $scope.isNew = data.isNew;
         $scope.entity = data.entity;
         $scope.namespaces = NamespaceCacheService.findAll();
-
         $scope.form = {};
+        
+        if ($scope.isNew && $scope.namespaces.length > 0) {
+            $scope.entity.namespace = $scope.namespaces[$scope.namespaces.length - 1];
+        }
         
         $scope.$watch(
             function() { return $scope.entity.entityName; },
