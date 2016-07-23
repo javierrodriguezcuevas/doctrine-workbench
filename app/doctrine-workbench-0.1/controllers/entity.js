@@ -3,14 +3,25 @@
 /**
  * New and edit entity controller
  */
-DoctrineWorkbenchController.controller('ModalNewEditEntityInstanceCtrl', [ '$scope', '$modalInstance', 'data', 'EntityService', 'NamespaceCacheService',
-    function($scope, $modalInstance, data, EntityService, NamespaceCacheService) {
+DoctrineWorkbenchController.controller('ModalNewEditEntityInstanceCtrl', [ '$scope', '$modalInstance', 'data', 'EntityService', 'UtilsService', 'NamespaceCacheService',
+    function($scope, $modalInstance, data, EntityService, UtilsService, NamespaceCacheService) {
 
         $scope.isNew = data.isNew;
         $scope.entity = data.entity;
         $scope.namespaces = NamespaceCacheService.findAll();
 
         $scope.form = {};
+        
+        $scope.$watch(
+            function() { return $scope.entity.entityName; },
+            function(newValue, oldValue) {
+                if (undefined === newValue ) {
+                    $scope.entity.tableName = undefined;
+                } else if ( UtilsService.toSnakeCase(newValue) !== oldValue ) {
+                    $scope.entity.tableName = UtilsService.toSnakeCase(newValue);
+                }
+            }
+        );
 
         /**
          * Check if entity exists by name
