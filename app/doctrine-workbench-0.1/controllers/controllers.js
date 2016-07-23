@@ -10,14 +10,6 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
         $scope.relations = RelationService.findAll();
         $scope.currentZoom = 1;
         
-        /** 
-         * Muestra las entidades y relaciones en json
-         */
-        $scope.showJson = function() {
-            //console.log(angular.toJson($scope.entities));
-            //console.log(angular.toJson($scope.relations));
-        };
-        
         /**
          * On page ready event
          */
