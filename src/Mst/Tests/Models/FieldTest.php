@@ -5,7 +5,7 @@ namespace Mst\Tests\Models;
 /**
  * @author javi
  */
-class FieldTest extends \PHPUnit_Framework_TestCase 
+class FieldTest extends \PHPUnit_Framework_TestCase
 {
     public function testConstructor()
     {
@@ -14,14 +14,14 @@ class FieldTest extends \PHPUnit_Framework_TestCase
         $tableName = 'test';
         $length = 0;
         $isNotNull = false;
-                
+
         $field = $this->getMockBuilder('Mst\Models\Field')
             ->setConstructorArgs(array($name, $type, $tableName, $length, $isNotNull))
             ->getMock();
-        
+
         $this->assertInstanceOf('Mst\Models\Field', $field);
     }
-    
+
     public function testConstructorArguments()
     {
         $name = '';
@@ -31,7 +31,7 @@ class FieldTest extends \PHPUnit_Framework_TestCase
         $isNotNull = null;
 
         $this->setExpectedException('InvalidArgumentException');
-        
+
         $field = $this->getMockBuilder('Mst\Models\Field')
             ->setConstructorArgs(array($name, $type, $tableName, $length, $isNotNull))
             ->getMock();

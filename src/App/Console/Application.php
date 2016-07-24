@@ -11,8 +11,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Application extends SymfonyApplication
 {
+    /** @var App*/
     private $silexApp;
 
+    /**
+     * @param App $silexApp
+     */
     public function __construct(App $silexApp)
     {
         parent::__construct('Doctrine Workbench', '0.1');
@@ -162,9 +166,9 @@ EOT
             ->setCode(function (InputInterface $input, OutputInterface $output) {
                 $fixtures = require $this->silexApp->getRootDir().'/resources/fixtures/fixtures.php';
                 $sqlBase = 'INSERT INTO %s (%s, %s, %s) VALUES (:name, :schema, :zoom)';
-                
-                foreach ($fixtures as $f) {    
-                    $sql = sprintf($sqlBase, 
+
+                foreach ($fixtures as $f) {
+                    $sql = sprintf($sqlBase,
                         $this->silexApp['db']->quoteIdentifier('schema'),
                         $this->silexApp['db']->quoteIdentifier('name'),
                         $this->silexApp['db']->quoteIdentifier('schema'),
@@ -174,11 +178,11 @@ EOT
                     $this->silexApp['db']->executeUpdate($sql, array(
                         'name' => $f['name'],
                         'schema' => $f['schema'],
-                        'zoom' => $f['zoom']
+                        'zoom' => $f['zoom'],
                     ));
                 }
-                
-                $output->writeln("Finish fixtures load.");
+
+                $output->writeln('Finish fixtures load.');
             });
     }
 }

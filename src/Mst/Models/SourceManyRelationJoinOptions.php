@@ -10,7 +10,7 @@ use Webmozart\Assert\Assert;
 class SourceManyRelationJoinOptions implements RelationOptionsInterface
 {
     const SOURCE_RELATION_JOIN_OPTIONS = '@ORM\JoinTable(name="%tablename%", joinColumns={@ORM\JoinColumn(name="%targetFieldKeyName%", referencedColumnName="%sourceFieldName%")}, inverseJoinColumns={@ORM\JoinColumn(name="%sourceFieldKeyName%", referencedColumnName="%targetFieldName%")})';
-    
+
     /** @var string */
     private $tablename;
     /** @var string */
@@ -21,9 +21,8 @@ class SourceManyRelationJoinOptions implements RelationOptionsInterface
     private $sourceFieldKeyName;
     /** @var string */
     private $targetFieldName;
-    
+
     /**
-     * 
      * @param string $tablename
      * @param string $targetFieldKeyName
      * @param string $sourceFieldName
@@ -37,24 +36,24 @@ class SourceManyRelationJoinOptions implements RelationOptionsInterface
         Assert::stringNotEmpty($sourceFieldName);
         Assert::stringNotEmpty($sourceFieldKeyName);
         Assert::stringNotEmpty($targetFieldName);
-        
+
         $this->tablename = $tablename;
         $this->targetFieldKeyName = $targetFieldKeyName;
         $this->sourceFieldName = $sourceFieldName;
         $this->sourceFieldKeyName = $sourceFieldKeyName;
         $this->targetFieldName = $targetFieldName;
     }
-    
-    public function __toString() 
+
+    public function __toString()
     {
         return str_replace(
-            array('%tablename%', '%targetFieldKeyName%', '%sourceFieldName%', '%sourceFieldKeyName%', '%targetFieldName%'), 
+            array('%tablename%', '%targetFieldKeyName%', '%sourceFieldName%', '%sourceFieldKeyName%', '%targetFieldName%'),
             array(
                 $this->tablename,
                 $this->targetFieldKeyName,
                 $this->sourceFieldName,
                 $this->sourceFieldKeyName,
-                $this->targetFieldName
+                $this->targetFieldName,
             ),
             self::SOURCE_RELATION_JOIN_OPTIONS
         );

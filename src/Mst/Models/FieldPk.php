@@ -7,7 +7,7 @@ use Webmozart\Assert\Assert;
 /**
  * @author javi
  */
-class FieldPk implements FieldInterface 
+class FieldPk implements FieldInterface
 {
     const FIELD_ID = <<<EOT
     /**
@@ -17,7 +17,7 @@ class FieldPk implements FieldInterface
      */
     private $%fieldname%;
 EOT;
-    
+
     /** @var string */
     protected $name;
     /** @var string */
@@ -26,9 +26,8 @@ EOT;
     protected $tableName;
     /** @var string */
     protected $strategy;
-    
+
     /**
-     * 
      * @param string $name
      * @param string $type
      * @param string $tableName
@@ -40,7 +39,7 @@ EOT;
         Assert::oneOf($type, array(
             'smallint',
             'integer',
-            'bigint'
+            'bigint',
         ));
         Assert::stringNotEmpty($tableName);
         Assert::oneOf($strategy, array(
@@ -49,14 +48,14 @@ EOT;
             'TABLE',
             'IDENTITY',
             'UUID',
-            'NONE'
+            'NONE',
         ));
         $this->name = $name;
         $this->type = $type;
         $this->tableName = $tableName;
         $this->strategy = $strategy;
     }
-    
+
     public function getName()
     {
         return $this->name;
@@ -66,24 +65,24 @@ EOT;
     {
         return $this->type;
     }
-    
+
     public function getTableName()
     {
         return $this->tableName;
     }
-    
+
     public function getStrategy()
     {
         return $this->strategy;
     }
-    
-    public function __toString() 
+
+    public function __toString()
     {
         $result = str_replace(
-            array('%fieldname%', '%tablename%', '%fieldtype%', '%strategy%'), 
-            array($this->getName(), $this->getTableName(), $this->getType(), $this->getStrategy()), 
+            array('%fieldname%', '%tablename%', '%fieldtype%', '%strategy%'),
+            array($this->getName(), $this->getTableName(), $this->getType(), $this->getStrategy()),
             self::FIELD_ID
-        ) . PHP_EOL;
+        ).PHP_EOL;
 
         return $result;
     }

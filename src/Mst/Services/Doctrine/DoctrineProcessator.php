@@ -8,7 +8,7 @@ use Webmozart\Assert\Assert;
  * @author javi
  */
 class DoctrineProcessator
-{    
+{
     const FILE_HEADER = <<<EOT
 <?php 
  
@@ -18,17 +18,20 @@ use Doctrine\ORM\Mapping as ORM;
 
 %entity%
 EOT;
-    
+
     /**
-     * Generate files from entities
+     * Generate files from entities.
+     * 
      * @param array $content
+     * 
      * @return array $fileContents
+     * 
      * @throws InvalidArgumentException
      */
-    public function generateFiles(array $content) 
+    public function generateFiles(array $content)
     {
         Assert::allIsInstanceOf($content, 'Mst\Models\Entity');
-        
+
         $filesContents = array();
 
         foreach ($content as $entity) {
@@ -38,7 +41,7 @@ EOT;
                 self::FILE_HEADER
             );
         }
-        
+
         return $filesContents;
     }
 }

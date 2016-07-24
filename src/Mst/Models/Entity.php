@@ -19,7 +19,7 @@ class %entityname%
 %fields%           
 }
 EOT;
-    
+
     /** @var string */
     protected $entityName;
     /** @var string */
@@ -30,25 +30,24 @@ EOT;
     protected $fields;
 
     /**
-     * 
      * @param string $entityName
      * @param string $tableName
      * @param string $namespace
      * @param string $fields
      */
-    public function __construct($entityName, $tableName, $namespace, array $fields) 
+    public function __construct($entityName, $tableName, $namespace, array $fields)
     {
         Assert::stringNotEmpty($entityName);
         Assert::stringNotEmpty($tableName);
         Assert::stringNotEmpty($namespace);
         Assert::allIsInstanceOf($fields, 'Mst\Models\FieldInterface');
-        
+
         $this->entityName = $entityName;
         $this->tableName = $tableName;
         $this->namespace = $namespace;
         $this->fields = $fields;
     }
-    
+
     public function getEntityName()
     {
         return $this->entityName;
@@ -64,7 +63,7 @@ EOT;
         return $this->tableName;
     }
 
-    public function setTableName($tableName) 
+    public function setTableName($tableName)
     {
         $this->tableName = $tableName;
     }
@@ -74,30 +73,30 @@ EOT;
         return $this->fields;
     }
 
-    public function setFields($fields) 
+    public function setFields($fields)
     {
         $this->fields = $fields;
     }
 
-    public function getNamespace() 
+    public function getNamespace()
     {
         return $this->namespace;
     }
 
-    public function setNamespace($namespace) 
+    public function setNamespace($namespace)
     {
         $this->namespace = $namespace;
     }
-    
+
     public function __toString()
     {
         $fields = '';
         foreach ($this->getFields() as $field) {
             $fields .= (string) $field;
         }
-        
+
         $result = str_replace(
-            array('%tablename%', '%entityname%', '%fields%'), 
+            array('%tablename%', '%entityname%', '%fields%'),
             array($this->getTableName(), $this->getEntityName(), $fields),
             self::ENTITY_HEADER
         );

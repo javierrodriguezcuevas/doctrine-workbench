@@ -2,18 +2,19 @@
 
 namespace Mst\Controllers;
 
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * @author javi
  */
-abstract class BaseController 
+abstract class BaseController
 {
     /**
-     * Return success response
+     * Return success response.
+     * 
      * @param array $data
-     * @return Response
+     * 
+     * @return JsonResponse
      */
     public function returnJsonSuccessResponse(array $data)
     {
@@ -21,19 +22,23 @@ abstract class BaseController
     }
 
     /**
-     * Return not success response
+     * Return not success response.
+     * 
      * @param string $message
-     * @return Response
+     * 
+     * @return JsonResponse
      */
     public function returnJsonFailResponse($message)
     {
         return $this->returnJsonResponse(array('success' => false, 'message' => $message));
     }
-    
+
     /**
-     * Return JsonResponse
+     * Return JsonResponse.
+     * 
      * @param array $data
-     * @return Response
+     * 
+     * @return JsonResponse
      */
     public function returnJsonResponse($data)
     {
