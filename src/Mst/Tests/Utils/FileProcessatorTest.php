@@ -12,7 +12,7 @@ class FileProcessatorTest extends \PHPUnit_Framework_TestCase
         $filesDir = __DIR__.'/../../../../web/temp/test';
         $filesContent = 'hola mundo.';
 
-        $fp = $this->getMockBuilder('Mst\Utils\FileProcessator')
+        $fp = $this->getMockBuilder('Mst\Utils\FileWriter')
                 ->setMethods(null)
                 ->getMock();
 
