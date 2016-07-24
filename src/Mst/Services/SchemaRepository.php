@@ -9,6 +9,7 @@ use Doctrine\DBAL\Connection;
  */
 class SchemaRepository
 {
+    const TABLE_NAME = 'workbench_schema';
     /** @var Connection */
     protected $db;
 
@@ -28,7 +29,7 @@ class SchemaRepository
     public function findAll()
     {
         $sqlBase = 'SELECT id, name FROM %s';
-        $sql = sprintf($sqlBase, $this->db->quoteIdentifier('schema'));
+        $sql = sprintf($sqlBase, $this->db->quoteIdentifier(self::TABLE_NAME));
 
         $statement = $this->db->executeQuery($sql);
 
@@ -46,7 +47,7 @@ class SchemaRepository
     {
         $sqlBase = 'SELECT * FROM %s WHERE %s = :id';
         $sql = sprintf($sqlBase,
-            $this->db->quoteIdentifier('schema'),
+            $this->db->quoteIdentifier(self::TABLE_NAME),
             $this->db->quoteIdentifier('id')
         );
 
@@ -68,7 +69,7 @@ class SchemaRepository
     {
         $sqlBase = 'INSERT INTO %s (%s, %s, %s) VALUES (:name, :schema, :zoom)';
         $sql = sprintf($sqlBase,
-            $this->db->quoteIdentifier('schema'),
+            $this->db->quoteIdentifier(self::TABLE_NAME),
             $this->db->quoteIdentifier('name'),
             $this->db->quoteIdentifier('schema'),
             $this->db->quoteIdentifier('zoom')
@@ -94,7 +95,7 @@ class SchemaRepository
     {
         $sqlBase = 'DELETE FROM %s WHERE %s = :id';
         $sql = sprintf($sqlBase,
-            $this->db->quoteIdentifier('schema'),
+            $this->db->quoteIdentifier(self::TABLE_NAME),
             $this->db->quoteIdentifier('id')
         );
 

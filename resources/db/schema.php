@@ -2,7 +2,7 @@
 
 $schema = new \Doctrine\DBAL\Schema\Schema();
 
-$table = $schema->createTable('schema');
+$table = $schema->createTable('workbench_schema');
 $table->addColumn('id', 'integer', array('unsigned' => true, 'autoincrement' => true));
 $table->addColumn('name', 'string', array('length' => 50));
 $table->addColumn('schema', 'text');
