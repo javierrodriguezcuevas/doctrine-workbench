@@ -35,6 +35,7 @@ var translations_EN = {
     'label.edit_fields': 'Edit fields',
     'label.entity.name': 'Entity name',
     'label.entity.table_name': 'Name in ddbb',
+    'label.entity.namespace': 'Namespace',
     'label.new_field': 'New field',
     'label.entity': 'Entity',
     'label.owner_side': '(owner side)',

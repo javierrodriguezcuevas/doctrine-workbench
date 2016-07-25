@@ -35,6 +35,7 @@ var translations_ES = {
     'label.edit_fields': 'Editar campos',
     'label.entity.name': 'Nombre de la entidad',
     'label.entity.table_name': 'Nombre de la tabla',
+    'label.entity.namespace': 'Namespace',
     'label.new_field': 'Nuevo campo',
     'label.entity': 'Entidad',
     'label.owner_side': '(owner side)',
