@@ -344,12 +344,7 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
         
         $scope.currentEntityOk = function(currentEntityForm) {
             if (currentEntityForm.$valid) {
-                var entity = EntityService.findById($scope.currentEntity.id);
-                entity.entityName = $scope.currentEntity.entityName;
-                entity.tableName = $scope.currentEntity.tableName;
-                entity.namespace = $scope.currentEntity.namespace;
-                
-                EntityService.update(entity);
+                $scope.updateEntityProperties($scope.currentEntity);
             }
         };
 
@@ -533,8 +528,8 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
                 }
             });
 
-            modalInstance.result.then(function(data) {
-                $scope.updateEntityProperties(data);
+            modalInstance.result.then(function(entity) {
+                $scope.updateEntityProperties(entity);
             }, function() {
 //                console.info('Modal dismissed at: ' + new Date());
             });
