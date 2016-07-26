@@ -28,6 +28,15 @@ hr {
 .noppading-top {
     padding-top: 0 !important;
 }
+.nomargin-bottom {
+    margin-bottom: 0 !important;
+}
+.border-bottom {
+    border-bottom: 1px solid #000;
+}
+.overflow-hidden {
+    overflow: hidden;
+}
 fieldset.border {
     border: 1px solid #eee !important;
     padding: 0 1.4em 1.4em 1.4em !important;

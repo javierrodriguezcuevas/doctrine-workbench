@@ -14,6 +14,23 @@
 .workbench-drag-cursor {
     cursor: url('../img/hand-grab-o.png') 6 6, crosshair;
 }
+#advanced-options-wrapper {
+    background-color: #fff;
+    z-index: 100;
+    width: 300px;
+    position: absolute;
+    padding-top: 18px;
+    display: inline-block;
+    border: 1px solid #000;
+    box-shadow: rgba(0, 0, 0, 0.0745098) 0px 0px 0px 0px inset, rgba(0, 0, 0, 0.54902) 0px 0px 7px 0px;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.0745098) 0px 0px 0px 0px inset, rgba(0, 0, 0, 0.54902) 0px 0px 7px 0px;
+}
+.input-xs {
+    height: 22px;
+    padding: 2px 8px;
+    font-size: 12px;
+    line-height: 1.5;
+}
 .fields-table .length-field:disabled {
     color: #eee;
 }
@@ -45,7 +62,6 @@
     width: 100%;
 }
 .item-header .close {
-/*    color: #999;*/
     color: #f9f9f9;
     text-shadow: none !important;
     opacity: 1 !important;
@@ -53,6 +69,9 @@
     right: -34px !important;
     top: -3px !important;
     z-index: 18 !important;
+}
+.item-header .minimize {
+    right: -25px !important;
 }
 .item {
     z-index: 1;
@@ -64,13 +83,28 @@
     background-color:#FFFFFF;
     text-align: center;
     box-shadow: rgba(0, 0, 0, 0.0745098) 0px 0px 0px 0px inset, rgba(0, 0, 0, 0.54902) 0px 0px 7px 0px;
-    -webkit-box-shadow: rgba(0, 0, 0, 0.0745098) 0px 0px 0px 0px inset, rgba(0, 0, 0, 0.54902) 0px 0px 7 0px;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.0745098) 0px 0px 0px 0px inset, rgba(0, 0, 0, 0.54902) 0px 0px 7px 0px;
+}
+.item.item-selected {
+    border: 1px solid #3eb589;
+    box-shadow: inset 0px 0px 0px 0px #000000,0px 0px 7px 0px #3eb589;
+    -webkit-box-shadow: inset 0px 0px 0px 0px #000000,0px 0px 7px 0px #3eb589;
+    -moz-box-shadow: inset 0px 0px 0px 0px #000000,0px 0px 7px 0px #3eb589;
+    -o-box-shadow: inset 0px 0px 0px 0px #000000,0px 0px 7px 0px #3eb589;
 }
 .connect {
     width: 100%;
     height: 20px;
     cursor: pointer;
     background-color: #40B3DF;
+}
+.disabled-form {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #fff;
+    opacity: 0.7;
 }
 /* jsPlumb */
 /** HOVER EFFECTS **/

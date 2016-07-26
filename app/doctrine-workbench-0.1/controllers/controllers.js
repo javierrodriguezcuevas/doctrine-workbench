@@ -9,6 +9,8 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
         $scope.connections = ConnectionService.findAll();
         $scope.relations = RelationService.findAll();
         $scope.currentZoom = 1;
+        $scope.currentEntity = null;
+        $scope.currentEntityForm = {};
         
         /**
          * On page ready event
@@ -333,6 +335,23 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
             }, 0);
             
         };
+        
+        $scope.setCurrentEntity = function(entity) {
+            $('.item').removeClass('item-selected');
+            $('[data-identifier="' + entity.id + '"]').addClass('item-selected');
+            $scope.currentEntity = angular.copy(EntityService.findById(entity.id));
+        };
+        
+        $scope.currentEntityOk = function(currentEntityForm) {
+            if (currentEntityForm.$valid) {
+                var entity = EntityService.findById($scope.currentEntity.id);
+                entity.entityName = $scope.currentEntity.entityName;
+                entity.tableName = $scope.currentEntity.tableName;
+                entity.namespace = $scope.currentEntity.namespace;
+                
+                EntityService.update(entity);
+            }
+        };
 
         /**
          * Edit a relation
@@ -485,6 +504,7 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
 
             modalInstance.result.then(function(data) {
                 var entity = EntityService.findById(id);
+                
                 entity.fields = data;
                 EntityService.update(entity);
             }, function() {
