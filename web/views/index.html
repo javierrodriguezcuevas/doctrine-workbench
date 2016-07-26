@@ -30,7 +30,7 @@
     <div id="advanced-options-wrapper">
         <div class="item-header-wrapper">
             <div class="item-move">
-                <span>{{ 'label.advanced_options' | translate }}</span>
+                <span class="title">{{ 'label.advanced_options' | translate }}</span>
             </div>
             <div class="item-header">
                 <button type="button" class="close minimize"><span>-</span></button>
@@ -43,7 +43,7 @@
                     <tbody>
                         <tr>
                             <td>
-                                {{ 'label.entity.name' | translate }}
+                                <span class="text-sm">{{ 'label.entity.name' | translate }}</span>
                             </td>
                             <td>
                                 <input class="form-control input-xs" name="entityName" type="text" required ng-model="currentEntity.entityName" ng-maxlength="255">
@@ -60,7 +60,7 @@
                         </tr>
                         <tr>
                             <td>
-                                {{ 'label.entity.table_name' | translate }}
+                                <span class="text-sm">{{ 'label.entity.table_name' | translate }}</span>
                             </td>
                             <td>
                                 <input class="form-control input-xs" name="tableName" type="text" required ng-model="currentEntity.tableName" ng-maxlength="255">
@@ -77,7 +77,7 @@
                         </tr>
                         <tr>
                             <td>
-                                {{ 'label.entity.namespace' | translate }}
+                                <span class="text-sm">{{ 'label.entity.namespace' | translate }}</span>
                             </td>
                             <td>
                                 <input class="form-control input-xs" name="namespace" type="text" required ng-model="currentEntity.namespace" ng-maxlength="255">

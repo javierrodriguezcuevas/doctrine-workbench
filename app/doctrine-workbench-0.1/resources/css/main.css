@@ -37,6 +37,9 @@ hr {
 .overflow-hidden {
     overflow: hidden;
 }
+.text-sm {
+    font-size: 12px;
+}
 fieldset.border {
     border: 1px solid #eee !important;
     padding: 0 1.4em 1.4em 1.4em !important;
