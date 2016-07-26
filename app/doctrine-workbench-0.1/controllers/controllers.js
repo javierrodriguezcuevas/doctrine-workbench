@@ -534,7 +534,7 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
             });
 
             modalInstance.result.then(function(data) {
-                EntityService.update(data);
+                $scope.updateEntityProperties(data);
             }, function() {
 //                console.info('Modal dismissed at: ' + new Date());
             });
@@ -565,6 +565,19 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
             }, function() {
 //                console.info('Modal dismissed at: ' + new Date());
             });
+        };
+
+        /**
+         * Update entity properties
+         * @param entity
+         */
+        $scope.updateEntityProperties = function(entity) {
+            var _entity = EntityService.findById(entity.id);
+            _entity.entityName = entity.entityName;
+            _entity.tableName = entity.tableName;
+            _entity.namespace = entity.namespace;
+            
+            EntityService.update(_entity);
         };
 
         /**
