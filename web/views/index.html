@@ -538,6 +538,7 @@
                         <div class="col-lg-8 col-md-8">
                             <input class="form-control" name="entityName" type="text" required
                                    ng-model="entity.entityName"
+                                   ng-change="updateTableName()"
                                    ng-maxlength="255"
                                    uniqueentityproperty="existByEntityName"
                                    entity="entity"

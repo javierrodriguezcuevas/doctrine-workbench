@@ -547,6 +547,7 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
 
             modalInstance.result.then(function(entity) {
                 $scope.updateEntityProperties(entity);
+                $scope.setCurrentEntity(entity);
             }, function() {
 //                console.info('Modal dismissed at: ' + new Date());
             });
@@ -637,6 +638,9 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
 
             // remove entity
             EntityService.remove(entityId);
+            
+            // update currentEntity
+            $scope.currentEntity = null;
         };
         
         /**

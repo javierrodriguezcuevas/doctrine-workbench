@@ -15,16 +15,16 @@ DoctrineWorkbenchController.controller('ModalNewEditEntityInstanceCtrl', [ '$sco
             $scope.entity.namespace = $scope.namespaces[$scope.namespaces.length - 1];
         }
         
-        $scope.$watch(
-            function() { return $scope.entity.entityName; },
-            function(newValue, oldValue) {
-                if (undefined === newValue ) {
-                    $scope.entity.tableName = undefined;
-                } else if ( UtilsService.toSnakeCase(newValue) !== oldValue ) {
-                    $scope.entity.tableName = UtilsService.toSnakeCase(newValue);
-                }
+        $scope.updateTableName = function() {
+            var newValue = $scope.entity.entityName;
+            var oldValue = $scope.entity.tableName;
+            
+            if (undefined === newValue ) {
+                $scope.entity.tableName = undefined;
+            } else if ( UtilsService.toSnakeCase(newValue) !== oldValue ) {
+                $scope.entity.tableName = UtilsService.toSnakeCase(newValue);
             }
-        );
+        };
 
         /**
          * Check if entity exists by name
