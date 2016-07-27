@@ -336,16 +336,33 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
             
         };
         
+        /**
+         * Set current entity
+         * @param entity
+         */
         $scope.setCurrentEntity = function(entity) {
             $('.item').removeClass('item-selected');
             $('[data-identifier="' + entity.id + '"]').addClass('item-selected');
             $scope.currentEntity = angular.copy(EntityService.findById(entity.id));
         };
         
+        /**
+         * Advanced options submit ok
+         * @param currentEntityForm
+         */
         $scope.currentEntityOk = function(currentEntityForm) {
             if (currentEntityForm.$valid) {
                 $scope.updateEntityProperties($scope.currentEntity);
             }
+        };
+        
+        /**
+         * Advanced options submit cancel
+         * @param currentEntityForm
+         */
+        $scope.currentEntityCancel = function() {
+            var newCurrentEntity = angular.copy(EntityService.findById($scope.currentEntity.id));
+            $scope.currentEntity = newCurrentEntity;
         };
 
         /**
@@ -583,6 +600,24 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
             for (var i = $scope.entities.length - 1, len = 0; i >= len; i--) {
                 $scope.removeEntity($scope.entities[i].id);
             }
+        };
+        
+        /**
+         * Check if entity exists by name
+         * @param string name
+         * @return boolean 
+         */
+        $scope.existByEntityName = function(name, id) {
+            return EntityService.existsByEntityName(name, id);
+        };
+
+        /**
+         * Check if entity exists by table name
+         * @param string name
+         * @return boolean 
+         */
+        $scope.existByTableName = function(name, id) {
+            return EntityService.existsByTableName(name, id);
         };
         
         /** 
