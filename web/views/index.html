@@ -47,14 +47,14 @@
                             </td>
                             <td>
                                 <div ng-class="{ &apos;has-error&apos;: currentEntityForm.entityName.$invalid &amp;&amp; currentEntityForm.entityName.$dirty }">
-                                    <input class="form-control input-xs" name="entityName" type="text" required ng-model="currentEntity.entityName" ng-maxlength="255">
+                                    <input class="form-control input-xs" name="entityName" type="text" required ng-model="currentEntity.entityName" ng-maxlength="255" uniqueentityproperty="existByEntityName" entity="currentEntity">
                                     <span class="help-block nomargin-bottom text-sm" ng-show="currentEntityForm.entityName.$error.required 
                                         &amp;&amp; currentEntityForm.entityName.$invalid 
                                         &amp;&amp; currentEntityForm.entityName.$dirty">{{ 'error.required' | translate }}</span>
                                     <span class="help-block nomargin-bottom text-sm" ng-show="currentEntityForm.entityName.$error.maxlength 
                                         &amp;&amp; currentEntityForm.entityName.$invalid 
                                         &amp;&amp; currentEntityForm.entityName.$dirty">{{ 'error.maxlength' | translate }}</span>
-                                    <span class="help-block nomargin-bottom text-sm" ng-show="currentEntityForm.entityName.$error.uniqueentityname 
+                                    <span class="help-block nomargin-bottom text-sm" ng-show="currentEntityForm.entityName.$error.uniqueentityproperty 
                                         &amp;&amp; currentEntityForm.entityName.$invalid 
                                         &amp;&amp; currentEntityForm.entityName.$dirty">{{ 'error.exists' | translate }}</span>
                                 </div>
@@ -66,14 +66,14 @@
                             </td>
                             <td>
                                 <div ng-class="{ &apos;has-error&apos;: currentEntityForm.tableName.$invalid &amp;&amp; currentEntityForm.tableName.$dirty }">
-                                    <input class="form-control input-xs" name="tableName" type="text" required ng-model="currentEntity.tableName" ng-maxlength="255">
+                                    <input class="form-control input-xs" name="tableName" type="text" required ng-model="currentEntity.tableName" ng-maxlength="255" uniqueentityproperty="existByTableName" entity="currentEntity">
                                     <span class="help-block nomargin-bottom text-sm" ng-show="currentEntityForm.tableName.$error.required 
                                         &amp;&amp; currentEntityForm.tableName.$invalid 
                                         &amp;&amp; currentEntityForm.tableName.$dirty">{{ 'error.required' | translate }}</span>
                                     <span class="help-block nomargin-bottom text-sm" ng-show="currentEntityForm.tableName.$error.maxlength 
                                         &amp;&amp; currentEntityForm.tableName.$invalid 
                                         &amp;&amp; currentEntityForm.tableName.$dirty">{{ 'error.maxlength' | translate }}</span>
-                                    <span class="help-block nomargin-bottom text-sm" ng-show="currentEntityForm.tableName.$error.uniqueentityname 
+                                    <span class="help-block nomargin-bottom text-sm" ng-show="currentEntityForm.tableName.$error.uniqueentityproperty 
                                         &amp;&amp; currentEntityForm.tableName.$invalid 
                                         &amp;&amp; currentEntityForm.tableName.$dirty">{{ 'error.exists' | translate }}</span>
                                 </div>
@@ -539,7 +539,8 @@
                             <input class="form-control" name="entityName" type="text" required
                                    ng-model="entity.entityName"
                                    ng-maxlength="255"
-                                   uniqueentityname="existByEntityName"
+                                   uniqueentityproperty="existByEntityName"
+                                   entity="entity"
                                    />
                             <p class="help-block"
                                 ng-show="form.entityName.$error.required 
@@ -550,7 +551,7 @@
                                 && form.entityName.$invalid 
                                 && form.entityName.$dirty">{{ 'error.maxlength' | translate }}</p>
                             <p class="help-block" 
-                                ng-show="form.entityName.$error.uniqueentityname 
+                                ng-show="form.entityName.$error.uniqueentityproperty 
                                 && form.entityName.$invalid 
                                 && form.entityName.$dirty">{{ 'error.exists' | translate }}</p>
                         </div>
@@ -563,7 +564,8 @@
                             <input class="form-control" name="tableName" type="text" required
                                    ng-model="entity.tableName"
                                    ng-maxlength="255"
-                                   uniqueentityname="existByTableName"
+                                   uniqueentityproperty="existByTableName"
+                                   entity="entity"
                                    />
                             <p class="help-block" 
                                 ng-show="form.tableName.$error.required 
@@ -574,7 +576,7 @@
                                 && form.tableName.$invalid 
                                 && form.tableName.$dirty">{{ 'error.maxlength' | translate }}</p>
                             <p class="help-block" 
-                                ng-show="form.tableName.$error.uniqueentityname 
+                                ng-show="form.tableName.$error.uniqueentityproperty 
                                 && form.tableName.$invalid 
                                 && form.tableName.$dirty">{{ 'error.exists' | translate }}</p>
                         </div>

@@ -68,6 +68,8 @@
                                     <input class="form-control input-xs" name="entityName" type="text" required
                                         ng-model="currentEntity.entityName"
                                         ng-maxlength="255"
+                                        uniqueentityproperty="existByEntityName"
+                                        entity="currentEntity"
                                     />
                                     <span class="help-block nomargin-bottom text-sm"
                                         ng-show="currentEntityForm.entityName.$error.required 
@@ -78,7 +80,7 @@
                                         && currentEntityForm.entityName.$invalid 
                                         && currentEntityForm.entityName.$dirty">{{ 'error.maxlength' | translate }}</span>
                                     <span class="help-block nomargin-bottom text-sm" 
-                                        ng-show="currentEntityForm.entityName.$error.uniqueentityname 
+                                        ng-show="currentEntityForm.entityName.$error.uniqueentityproperty 
                                         && currentEntityForm.entityName.$invalid 
                                         && currentEntityForm.entityName.$dirty">{{ 'error.exists' | translate }}</span>
                                 </div>
@@ -93,6 +95,8 @@
                                     <input class="form-control input-xs" name="tableName" type="text" required
                                         ng-model="currentEntity.tableName"
                                         ng-maxlength="255"
+                                        uniqueentityproperty="existByTableName"
+                                        entity="currentEntity"
                                     />
                                     <span class="help-block nomargin-bottom text-sm" 
                                         ng-show="currentEntityForm.tableName.$error.required 
@@ -103,7 +107,7 @@
                                         && currentEntityForm.tableName.$invalid 
                                         && currentEntityForm.tableName.$dirty">{{ 'error.maxlength' | translate }}</span>
                                     <span class="help-block nomargin-bottom text-sm" 
-                                        ng-show="currentEntityForm.tableName.$error.uniqueentityname 
+                                        ng-show="currentEntityForm.tableName.$error.uniqueentityproperty 
                                         && currentEntityForm.tableName.$invalid 
                                         && currentEntityForm.tableName.$dirty">{{ 'error.exists' | translate }}</span>
                                 </div>
