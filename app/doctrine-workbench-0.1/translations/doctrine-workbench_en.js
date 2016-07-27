@@ -48,5 +48,6 @@ var translations_EN = {
     'label.sure_new_workbench': 'Are you sure you want to start a new workbench?. Current will be deleted',
     'label.sure_delete_entity': 'Are you sure you want to delete the entity. Relations will be deleted too',
     'label.save_schema_name': 'Schema name',
-    'label.loaded': 'loaded'
+    'label.loaded': 'loaded',
+    'label.advanced_options': 'Advanced options'
 };

@@ -48,5 +48,6 @@ var translations_ES = {
     'label.sure_new_workbench': '¿Seguro que quieres empezar un nuevo schema? Se eliminará el actual.',
     'label.sure_delete_entity': '¿Seguro que quieres eliminar la entidad? Se eliminarán las relaciones también.',
     'label.save_schema_name': 'Nombre para el schema',
-    'label.loaded': 'cargado'
+    'label.loaded': 'cargado',
+    'label.advanced_options': 'Opciones avanzadas'
 };

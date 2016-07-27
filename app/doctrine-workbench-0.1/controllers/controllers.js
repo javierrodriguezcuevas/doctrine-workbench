@@ -9,6 +9,8 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
         $scope.connections = ConnectionService.findAll();
         $scope.relations = RelationService.findAll();
         $scope.currentZoom = 1;
+        $scope.currentEntity = null;
+        $scope.currentEntityForm = {};
         
         /**
          * On page ready event
@@ -333,6 +335,35 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
             }, 0);
             
         };
+        
+        /**
+         * Set current entity
+         * @param entity
+         */
+        $scope.setCurrentEntity = function(entity) {
+            $('.item').removeClass('item-selected');
+            $('[data-identifier="' + entity.id + '"]').addClass('item-selected');
+            $scope.currentEntity = angular.copy(EntityService.findById(entity.id));
+        };
+        
+        /**
+         * Advanced options submit ok
+         * @param currentEntityForm
+         */
+        $scope.currentEntityOk = function(currentEntityForm) {
+            if (currentEntityForm.$valid) {
+                $scope.updateEntityProperties($scope.currentEntity);
+            }
+        };
+        
+        /**
+         * Advanced options submit cancel
+         * @param currentEntityForm
+         */
+        $scope.currentEntityCancel = function() {
+            var newCurrentEntity = angular.copy(EntityService.findById($scope.currentEntity.id));
+            $scope.currentEntity = newCurrentEntity;
+        };
 
         /**
          * Edit a relation
@@ -485,6 +516,7 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
 
             modalInstance.result.then(function(data) {
                 var entity = EntityService.findById(id);
+                
                 entity.fields = data;
                 EntityService.update(entity);
             }, function() {
@@ -513,8 +545,8 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
                 }
             });
 
-            modalInstance.result.then(function(data) {
-                $scope.updateEntityProperties(data);
+            modalInstance.result.then(function(entity) {
+                $scope.updateEntityProperties(entity);
             }, function() {
 //                console.info('Modal dismissed at: ' + new Date());
             });
@@ -568,6 +600,24 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
             for (var i = $scope.entities.length - 1, len = 0; i >= len; i--) {
                 $scope.removeEntity($scope.entities[i].id);
             }
+        };
+        
+        /**
+         * Check if entity exists by name
+         * @param string name
+         * @return boolean 
+         */
+        $scope.existByEntityName = function(name, id) {
+            return EntityService.existsByEntityName(name, id);
+        };
+
+        /**
+         * Check if entity exists by table name
+         * @param string name
+         * @return boolean 
+         */
+        $scope.existByTableName = function(name, id) {
+            return EntityService.existsByTableName(name, id);
         };
         
         /** 

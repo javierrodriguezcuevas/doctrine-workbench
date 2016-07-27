@@ -27,8 +27,85 @@
     <span slider="" ng-model="currentZoom" on-slide="updateZoom()" ng-click="updateZoom()" min="0.1" step="0.01" precision="2" max="1.9" orientation="vertical" value="currentZoom" slider-tooltip="hide"></span>
 </div>
 <div id="workbench-wrapper">
+    <div id="advanced-options-wrapper">
+        <div class="item-header-wrapper">
+            <div class="item-move">
+                <span class="title">{{ 'label.advanced_options' | translate }}</span>
+            </div>
+            <div class="item-header">
+                <button type="button" class="close minimize"><span>-</span></button>
+            </div>
+        </div>
+        <div advanced-options="">
+            <form novalidate="" name="currentEntityForm" class="form-horizontal" ng-submit="currentEntityOk(currentEntityForm)">
+                <div class="disabled-form" ng-show="null === currentEntity"></div>
+                <table class="table table-condensed table-bordered table-striped nomargin-bottom">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span class="text-sm">{{ 'label.entity.name' | translate }}</span>
+                            </td>
+                            <td>
+                                <div ng-class="{ &apos;has-error&apos;: currentEntityForm.entityName.$invalid &amp;&amp; currentEntityForm.entityName.$dirty }">
+                                    <input class="form-control input-xs" name="entityName" type="text" required ng-model="currentEntity.entityName" ng-maxlength="255" uniqueentityproperty="existByEntityName" entity="currentEntity">
+                                    <span class="help-block nomargin-bottom text-sm" ng-show="currentEntityForm.entityName.$error.required 
+                                        &amp;&amp; currentEntityForm.entityName.$invalid 
+                                        &amp;&amp; currentEntityForm.entityName.$dirty">{{ 'error.required' | translate }}</span>
+                                    <span class="help-block nomargin-bottom text-sm" ng-show="currentEntityForm.entityName.$error.maxlength 
+                                        &amp;&amp; currentEntityForm.entityName.$invalid 
+                                        &amp;&amp; currentEntityForm.entityName.$dirty">{{ 'error.maxlength' | translate }}</span>
+                                    <span class="help-block nomargin-bottom text-sm" ng-show="currentEntityForm.entityName.$error.uniqueentityproperty 
+                                        &amp;&amp; currentEntityForm.entityName.$invalid 
+                                        &amp;&amp; currentEntityForm.entityName.$dirty">{{ 'error.exists' | translate }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="text-sm">{{ 'label.entity.table_name' | translate }}</span>
+                            </td>
+                            <td>
+                                <div ng-class="{ &apos;has-error&apos;: currentEntityForm.tableName.$invalid &amp;&amp; currentEntityForm.tableName.$dirty }">
+                                    <input class="form-control input-xs" name="tableName" type="text" required ng-model="currentEntity.tableName" ng-maxlength="255" uniqueentityproperty="existByTableName" entity="currentEntity">
+                                    <span class="help-block nomargin-bottom text-sm" ng-show="currentEntityForm.tableName.$error.required 
+                                        &amp;&amp; currentEntityForm.tableName.$invalid 
+                                        &amp;&amp; currentEntityForm.tableName.$dirty">{{ 'error.required' | translate }}</span>
+                                    <span class="help-block nomargin-bottom text-sm" ng-show="currentEntityForm.tableName.$error.maxlength 
+                                        &amp;&amp; currentEntityForm.tableName.$invalid 
+                                        &amp;&amp; currentEntityForm.tableName.$dirty">{{ 'error.maxlength' | translate }}</span>
+                                    <span class="help-block nomargin-bottom text-sm" ng-show="currentEntityForm.tableName.$error.uniqueentityproperty 
+                                        &amp;&amp; currentEntityForm.tableName.$invalid 
+                                        &amp;&amp; currentEntityForm.tableName.$dirty">{{ 'error.exists' | translate }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="text-sm">{{ 'label.entity.namespace' | translate }}</span>
+                            </td>
+                            <td>
+                                <div ng-class="{ &apos;has-error&apos;: currentEntityForm.namespace.$invalid &amp;&amp; currentEntityForm.namespace.$dirty }">
+                                    <input class="form-control input-xs" name="namespace" type="text" required ng-model="currentEntity.namespace" ng-maxlength="255">
+                                    <span class="help-block nomargin-bottom text-sm" ng-show="currentEntityForm.namespace.$error.required 
+                                        &amp;&amp; currentEntityForm.namespace.$invalid 
+                                        &amp;&amp; currentEntityForm.namespace.$dirty">{{ 'error.required' | translate }}</span>
+                                    <span class="help-block nomargin-bottom text-sm" ng-show="currentEntityForm.namespace.$error.maxlength 
+                                        &amp;&amp; currentEntityForm.namespace.$invalid 
+                                        &amp;&amp; currentEntityForm.namespace.$dirty">{{ 'error.maxlength' | translate }}</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="text-right">
+                    <button class="btn btn-default btn-xs" ng-disabled="null === currentEntity" ng-click="currentEntityCancel()" type="button">{{ 'label.cancel' | translate }}</button>
+                    <button class="btn btn-primary btn-xs" ng-disabled="null === currentEntity || currentEntityForm.$invalid" type="submit">{{ 'label.ok' | translate }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <div id="workbench">
-        <div plumb-item="" class="item" ng-repeat="entity in entities" ng-style="{&apos;left&apos;: entity.x, &apos;top&apos;: entity.y }" data-identifier="{{entity.id}}">
+        <div plumb-item="" class="item" ng-repeat="entity in entities" ng-style="{&apos;left&apos;: entity.x, &apos;top&apos;: entity.y }" ng-click="setCurrentEntity(entity)" data-identifier="{{entity.id}}">
             <div class="item-header-wrapper">
                 <div class="item-move"></div>
                 <div class="item-header">
@@ -462,7 +539,8 @@
                             <input class="form-control" name="entityName" type="text" required
                                    ng-model="entity.entityName"
                                    ng-maxlength="255"
-                                   uniqueentityname="existByEntityName"
+                                   uniqueentityproperty="existByEntityName"
+                                   entity="entity"
                                    />
                             <p class="help-block"
                                 ng-show="form.entityName.$error.required 
@@ -473,7 +551,7 @@
                                 && form.entityName.$invalid 
                                 && form.entityName.$dirty">{{ 'error.maxlength' | translate }}</p>
                             <p class="help-block" 
-                                ng-show="form.entityName.$error.uniqueentityname 
+                                ng-show="form.entityName.$error.uniqueentityproperty 
                                 && form.entityName.$invalid 
                                 && form.entityName.$dirty">{{ 'error.exists' | translate }}</p>
                         </div>
@@ -486,7 +564,8 @@
                             <input class="form-control" name="tableName" type="text" required
                                    ng-model="entity.tableName"
                                    ng-maxlength="255"
-                                   uniqueentityname="existByTableName"
+                                   uniqueentityproperty="existByTableName"
+                                   entity="entity"
                                    />
                             <p class="help-block" 
                                 ng-show="form.tableName.$error.required 
@@ -497,7 +576,7 @@
                                 && form.tableName.$invalid 
                                 && form.tableName.$dirty">{{ 'error.maxlength' | translate }}</p>
                             <p class="help-block" 
-                                ng-show="form.tableName.$error.uniqueentityname 
+                                ng-show="form.tableName.$error.uniqueentityproperty 
                                 && form.tableName.$invalid 
                                 && form.tableName.$dirty">{{ 'error.exists' | translate }}</p>
                         </div>
