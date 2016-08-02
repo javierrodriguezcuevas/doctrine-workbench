@@ -47,10 +47,7 @@ class Application extends SilexApplication
         $app['twig.path'] = array($this->rootDir.'src/App/templates', $this->rootDir.'src/Mst/Views');
         $app['schema.repository'] = new SchemaRepository($app['db']);
         $app['schema.validator'] = new ViewDataValidator();
-        //$app['file_writer'] = new FileWriter();
-        //$app['doctrine_transformer'] = new DoctrineViewToModelTransformer();
         $app['doctrine_transformer'] = new ViewToModelTransformer();
-        //$app['doctrine_processator'] = new DoctrineProcessator();
         $app['compressor_manager'] = new CompressorManager();
 
         $app->mount('/', new ControllerProvider());
