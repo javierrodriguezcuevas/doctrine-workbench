@@ -2,6 +2,8 @@
 
 namespace Mst\Utils;
 
+use RecursiveIteratorIterator;
+use RecursiveDirectoryIterator;
 use Webmozart\Assert\Assert;
 
 /**
@@ -22,14 +24,35 @@ class CompressorManager
         Assert::stringNotEmpty($dir);
         Assert::stringNotEmpty($filename);
         Assert::directory($dir);
-
+        
         $zip = new \ZipArchive();
         $openResult = $zip->open($dir.DIRECTORY_SEPARATOR.$filename, \ZipArchive::CREATE);
 
         Assert::true($openResult);
 
-        foreach (glob($dir.DIRECTORY_SEPARATOR.'*.*') as $file) {
-            Assert::true($zip->addFile($file, basename($file)));
+        if (true === is_dir($dir)) {
+            $files = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($dir), 
+                RecursiveIteratorIterator::SELF_FIRST
+            );
+
+            foreach ($files as $file) {
+                $file = str_replace('\\', '/', $file);
+
+                // Ignore "." and ".." folders
+                if (in_array(substr($file, strrpos($file, '/')+1), array('.', '..')) )
+                    continue;
+
+                $file = realpath($file);
+
+                if (true === is_dir($file)) {
+                    $zip->addEmptyDir(str_replace($file.DIRECTORY_SEPARATOR, '', $file.DIRECTORY_SEPARATOR));
+                } elseif (true === is_file($file)) {
+                    $zip->addFile($file, str_replace($dir.DIRECTORY_SEPARATOR, '', $file));
+                }
+            }
+        } elseif (true === is_file($dir)) {
+            $zip->addFile($dir, basename($dir));
         }
 
         $zip->close();

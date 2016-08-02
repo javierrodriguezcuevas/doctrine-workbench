@@ -197,21 +197,18 @@ class ControllerProvider extends BaseController implements ControllerProviderInt
 
         if ($app['schema.validator']->isValidProccessData($dataJson)) {
             try {
-                $content = $app['doctrine_transformer']->handleJsonData($dataJson);
-                $filesContents = $app['doctrine_processator']->generateFiles($content);
-                $dir = $app['file_writer']->write($this->app->getRootDir().'web/temp', $filesContents, 'php');
+                $uniqid = uniqid();
+                $filepath = $this->app->getRootDir().'web'.DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR.$uniqid;
+                
+                $app['doctrine_transformer']->handleJsonData($dataJson, 'annotation', $filepath);
 
-                if (false != $dir) {
-                    $filename = basename($dir).'.zip';
-
-                    if (false != $app['compressor_manager']->generateZip($dir, $filename)) {
-                        return $this->returnJsonSuccessResponse(array('downloadUrl' => $request->getBasePath().'/temp/'.basename($filename, '.zip').'/'.$filename));
-                    }
-
-                    return $this->returnJsonFailResponse('Error: generating zip.');
+                if (false != $app['compressor_manager']->generateZip($filepath, $uniqid.'.zip')) {
+                    return $this->returnJsonSuccessResponse(array(
+                        'downloadUrl' => $request->getBasePath().'/temp/'.$uniqid.'/'.$uniqid.'.zip'
+                    ));
                 }
 
-                return $this->returnJsonFailResponse('Error: generating files.');
+                return $this->returnJsonFailResponse('Error: generating zip.');
             } catch (\Exception $e) {
                 return $this->returnJsonFailResponse($e->getMessage());
             }

@@ -2,6 +2,8 @@
 
 namespace Mst\Tests\Utils;
 
+use Mst\Utils\CompressorManager;
+
 /**
  * @author Javi
  */
@@ -9,9 +11,7 @@ class CompressorManagerTest extends \PHPUnit_Framework_TestCase
 {
     public function testGenerateZipDirNotExists()
     {
-        $cm = $this->getMockBuilder('Mst\Utils\CompressorManager')
-            ->setMethods(null)
-            ->getMock();
+        $cm = new CompressorManager();
 
         $this->setExpectedException('InvalidArgumentException');
 
@@ -20,9 +20,7 @@ class CompressorManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateZipParameters()
     {
-        $cm = $this->getMockBuilder('Mst\Utils\CompressorManager')
-            ->setMethods(null)
-            ->getMock();
+        $cm = new CompressorManager();
 
         $this->setExpectedException('InvalidArgumentException');
 
@@ -40,9 +38,7 @@ class CompressorManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testGenerateZip()
     {
-        $cm = $this->getMockBuilder('Mst\Utils\CompressorManager')
-            ->setMethods(null)
-            ->getMock();
+        $cm = new CompressorManager();
 
         $this->assertInstanceOf('ZipArchive', $cm->generateZip(__DIR__.'/../../../../web/temp/test', 'test'));
     }

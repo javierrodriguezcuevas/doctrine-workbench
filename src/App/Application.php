@@ -4,11 +4,9 @@ namespace App;
 
 use Silex\Application as SilexApplication;
 use Mst\Services\SchemaRepository;
-use Mst\Services\Doctrine\DoctrineViewToModelTransformer;
-use Mst\Services\Doctrine\DoctrineProcessator;
+use Mst\Services\ViewToModelTransformer;
 use Mst\Services\ViewDataValidator;
 use Mst\Utils\CompressorManager;
-use Mst\Utils\FileWriter;
 use Silex\Provider\DoctrineServiceProvider;
 use Silex\Provider\ServiceControllerServiceProvider;
 use Silex\Provider\UrlGeneratorServiceProvider;
@@ -28,7 +26,7 @@ class Application extends SilexApplication
      */
     public function __construct($env)
     {
-        $this->rootDir = __DIR__.'/../../';
+        $this->rootDir = realpath(__DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..').DIRECTORY_SEPARATOR;
         $this->env = $env;
 
         parent::__construct();
@@ -49,9 +47,10 @@ class Application extends SilexApplication
         $app['twig.path'] = array($this->rootDir.'src/App/templates', $this->rootDir.'src/Mst/Views');
         $app['schema.repository'] = new SchemaRepository($app['db']);
         $app['schema.validator'] = new ViewDataValidator();
-        $app['file_writer'] = new FileWriter();
-        $app['doctrine_transformer'] = new DoctrineViewToModelTransformer();
-        $app['doctrine_processator'] = new DoctrineProcessator();
+        //$app['file_writer'] = new FileWriter();
+        //$app['doctrine_transformer'] = new DoctrineViewToModelTransformer();
+        $app['doctrine_transformer'] = new ViewToModelTransformer();
+        //$app['doctrine_processator'] = new DoctrineProcessator();
         $app['compressor_manager'] = new CompressorManager();
 
         $app->mount('/', new ControllerProvider());

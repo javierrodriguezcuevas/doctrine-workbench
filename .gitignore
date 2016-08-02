@@ -5,3 +5,7 @@ vendor/
 node_modules/
 assets/
 coverage/
+web/css/
+web/fonts/
+web/img/
+web/js/
