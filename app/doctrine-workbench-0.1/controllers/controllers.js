@@ -226,7 +226,13 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
             request.success(
                 function(html) {
                     if (html.success) {
-                        location.href = html.data.downloadUrl;
+                        if (html.data.hasOwnProperty('downloadUrl')) {
+                            location.href = html.data.downloadUrl;
+                        } else if (html.data.hasOwnProperty('message')) {
+                            UtilsService.bsalert(html.data.message);
+                        } else {
+                            UtilsService.bsalert($translate.instant('label.proccess_success'));
+                        }
                     } else {
                         UtilsService.bsalert($translate.instant('error.response_server') + '<br/>' + html.message);
                         console.log(html);
