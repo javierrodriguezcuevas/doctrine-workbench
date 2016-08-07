@@ -2,107 +2,97 @@
 
 namespace Mst\Services;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\ORM\EntityManager;
+use Mst\Entity\WorkbenchSchema;
+use Mst\Models\SchemaRepository as SchemaRepositoryInterface;
 
 /**
  * @author javi
  */
-class SchemaRepository
+class SchemaRepository implements SchemaRepositoryInterface
 {
-    const TABLE_NAME = 'workbench_schema';
-    /** @var Connection */
-    protected $db;
-
+    /** @var EntityManager */
+    protected $em;
+    
     /**
-     * @param Connection $db
+     * @param EntityManager $em
      */
-    public function __construct(Connection $db)
+    public function __construct(EntityManager $em)
     {
-        $this->db = $db;
+        $this->em = $em;
     }
 
     /**
-     * Find all rows.
+     * Find all WorkbenchSchemas
      * 
      * @return array
      */
     public function findAll()
     {
-        $sqlBase = 'SELECT id, name FROM %s';
-        $sql = sprintf($sqlBase, $this->db->quoteIdentifier(self::TABLE_NAME));
-
-        $statement = $this->db->executeQuery($sql);
-
-        return $statement->fetchAll();
+        return $this->em->getRepository('Mst\Entity\WorkbenchSchema')->findAll();
     }
 
     /**
-     * Find one row by id.
+     * Find one WorkbenchSchema by id
      * 
-     * @param int $id
+     * @param integer $id
      * 
-     * @return mixed array or FALSE on failure.
+     * @return mixed WorkbenchSchema or false on failure.
      */
     public function find($id)
     {
-        $sqlBase = 'SELECT * FROM %s WHERE %s = :id';
-        $sql = sprintf($sqlBase,
-            $this->db->quoteIdentifier(self::TABLE_NAME),
-            $this->db->quoteIdentifier('id')
-        );
-
-        $statement = $this->db->executeQuery($sql, array(
-            'id' => $id,
-        ));
-
-        return $statement->fetch();
+        $result = $this->em->getRepository('Mst\Entity\WorkbenchSchema')->find($id);
+        
+        return (null === $result) ? false : $result;
     }
 
     /**
-     * Save a row.
+     * Save a WorkbenchSchema
      * 
-     * @param array $values
+     * @param WorkbenchSchema $entity
      * 
      * @return bool
      */
-    public function save($values)
+    public function save(WorkbenchSchema $entity)
     {
-        $sqlBase = 'INSERT INTO %s (%s, %s, %s) VALUES (:name, :schema, :zoom)';
-        $sql = sprintf($sqlBase,
-            $this->db->quoteIdentifier(self::TABLE_NAME),
-            $this->db->quoteIdentifier('name'),
-            $this->db->quoteIdentifier('schema'),
-            $this->db->quoteIdentifier('zoom')
-        );
+        $result = false;
 
-        $result = $this->db->executeUpdate($sql, array(
-            'name' => $values['name'],
-            'schema' => $values['schema'],
-            'zoom' => $values['zoom'],
-        ));
-
+        try {
+            $this->em->persist($entity);
+            $this->em->flush($entity);
+            
+            $result = true;
+        } catch (\Exception $e) {
+            
+        }
+        
         return $result;
     }
 
     /**
-     * Remove a row by id.
+     * Remove a WorkbenchSchema by id
      * 
-     * @param int $id
+     * @param integer $id
      * 
      * @return bool
      */
     public function delete($id)
     {
-        $sqlBase = 'DELETE FROM %s WHERE %s = :id';
-        $sql = sprintf($sqlBase,
-            $this->db->quoteIdentifier(self::TABLE_NAME),
-            $this->db->quoteIdentifier('id')
-        );
-
-        $statement = $this->db->executeQuery($sql, array(
-            'id' => $id,
-        ));
-
-        return $statement->execute();
+        $result = false;
+        
+        try {
+            $entity = $this->find($id);
+            
+            if (null !== $entity) {
+                $this->em->remove($entity);
+                $this->em->flush($entity);
+            
+                $result = true;
+            }
+        } catch (\Exception $e) {
+            
+        }
+        
+        return $result;
     }
 }

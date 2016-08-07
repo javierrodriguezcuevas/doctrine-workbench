@@ -12,11 +12,11 @@ abstract class BaseController
     /**
      * Return success response.
      * 
-     * @param array $data
+     * @param mixed $data
      * 
      * @return JsonResponse
      */
-    public function returnJsonSuccessResponse(array $data)
+    public function returnJsonSuccessResponse($data)
     {
         return $this->returnJsonResponse(array('success' => true, 'data' => $data));
     }

@@ -15,3 +15,14 @@ $app['db.options'] = array(
     'charset' => 'utf8',
     'driverOptions' => array(1002 => 'SET NAMES utf8'),
 );
+
+$app['orm.em.options'] = array(
+    'mappings' => array(
+        array(
+            'type' => 'annotation',
+            'namespace' => 'Mst\Entity',
+            'path' => __DIR__.'/../../Mst/Entity',
+            'use_simple_annotation_reader' => false,
+        ),
+    )
+);

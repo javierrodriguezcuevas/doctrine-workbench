@@ -7,6 +7,7 @@ use Mst\Services\SchemaRepository;
 use Mst\Services\ViewToModelTransformer;
 use Mst\Services\ViewDataValidator;
 use Mst\Utils\CompressorManager;
+use Dflydev\Silex\Provider\DoctrineOrm\DoctrineOrmServiceProvider;
 use Silex\Provider\DoctrineServiceProvider;
 use Silex\Provider\ServiceControllerServiceProvider;
 use Silex\Provider\UrlGeneratorServiceProvider;
@@ -43,9 +44,10 @@ class Application extends SilexApplication
         $app->register(new ServiceControllerServiceProvider());
         $app->register(new UrlGeneratorServiceProvider());
         $app->register(new TwigServiceProvider());
+        $app->register(new DoctrineOrmServiceProvider());
 
         $app['twig.path'] = array($this->rootDir.'src/App/templates', $this->rootDir.'src/Mst/Views');
-        $app['schema.repository'] = new SchemaRepository($app['db']);
+        $app['schema.repository'] = new SchemaRepository($app['orm.em']);
         $app['schema.validator'] = new ViewDataValidator();
         $app['doctrine_transformer'] = new ViewToModelTransformer();
         $app['compressor_manager'] = new CompressorManager();
