@@ -36,6 +36,7 @@ var translations_ES = {
     'label.entity.name': 'Nombre de la entidad',
     'label.entity.table_name': 'Nombre de la tabla',
     'label.entity.namespace': 'Namespace',
+    'label.entity.fields': 'Campos',
     'label.new_field': 'Nuevo campo',
     'label.entity': 'Entidad',
     'label.owner_side': '(owner side)',
