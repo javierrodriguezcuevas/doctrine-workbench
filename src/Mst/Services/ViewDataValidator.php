@@ -3,75 +3,68 @@
 namespace Mst\Services;
 
 use Webmozart\Assert\Assert;
+use JsonSchema\Validator;
 
 /**
  * @author javi
  */
 class ViewDataValidator
 {
+    const VALID_JSON = '{"$schema": "http://json-schema.org/draft-04/schema#","type": "object","properties": {"id": {"type": "integer"}},"required": ["id"]}';
+    const VALID_SAVE_DATA = '{ "$schema": "http://json-schema.org/draft-04/schema#", "type": "object", "properties": { "name": { "type": "string" }, "zoom": { "type": "integer" }, "schema": { "type": "object", "properties": { "entities": { "type": "array", "items": { "type": "object", "properties": { "x": { "type": "integer" }, "y": { "type": "integer" }, "fields": { "type": "array", "items": { "type": "object", "properties": { "relations": { "type": "array", "items": { "type": "string" } }, "id": { "type": "string" }, "name": { "type": "string" }, "tableName": { "type": "string" }, "length": { "type": "integer" }, "pk": { "type": "boolean" }, "nn": { "type": "boolean" }, "type": { "type": "string" }, "default": { "type": "null" } }, "required": [ "relations", "id", "name", "tableName", "length", "pk", "nn", "type", "default" ] } }, "relations": { "type": "array", "items": { "type": "string" } }, "id": { "type": "string" }, "entityName": { "type": "string" }, "tableName": { "type": "string" }, "namespace": { "type": "string" } }, "required": [ "x", "y", "fields", "relations", "id", "entityName", "tableName", "namespace" ] } }, "relations": { "type": "array", "items": { "type": "object", "properties": { "connectionId": { "type": "string" }, "name": { "type": "string" }, "type": { "type": "integer" }, "hoverClass": { "type": "string" }, "cascadeOptions": { "type": "array", "items": {} }, "sourceEntityId": { "type": "string" }, "targetEntityId": { "type": "string" }, "sourceFieldId": { "type": "string" }, "targetFieldId": { "type": "string" }, "sourceField": { "type": "object", "properties": { "relations": { "type": "array", "items": { "type": "string" } }, "id": { "type": "string" }, "name": { "type": "string" }, "tableName": { "type": "string" }, "length": { "type": "integer" }, "pk": { "type": "boolean" }, "nn": { "type": "boolean" }, "type": { "type": "string" }, "default": { "type": "null" } }, "required": [ "relations", "id", "name", "tableName", "length", "pk", "nn", "type", "default" ] }, "targetField": { "type": "object", "properties": { "relations": { "type": "array", "items": { "type": "string" } }, "id": { "type": "string" }, "name": { "type": "string" }, "tableName": { "type": "string" }, "length": { "type": "integer" }, "pk": { "type": "boolean" }, "nn": { "type": "boolean" }, "type": { "type": "string" }, "default": { "type": "null" } }, "required": [ "relations", "id", "name", "tableName", "length", "pk", "nn", "type", "default" ] }, "targetRelatedFieldId": { "type": "string" }, "tableName": { "type": "string" }, "sourceRelatedFieldId": { "type": "string" } }, "required": [ "connectionId", "name", "type", "hoverClass", "cascadeOptions", "sourceEntityId", "targetEntityId", "sourceFieldId", "targetFieldId", "sourceField", "targetField", "targetRelatedFieldId", "tableName", "sourceRelatedFieldId" ] } } }, "required": [ "entities", "relations" ] } }, "required": [ "name", "zoom", "schema" ] }';
+    const VALID_PROCCESS_DATA = '{ "$schema": "http://json-schema.org/draft-04/schema#", "type": "object", "properties": { "entities": { "type": "array", "items": { "type": "object", "properties": { "x": { "type": "integer" }, "y": { "type": "integer" }, "fields": { "type": "array", "items": { "type": "object", "properties": { "relations": { "type": "array", "items": { "type": "string" } }, "id": { "type": "string" }, "name": { "type": "string" }, "tableName": { "type": "string" }, "length": { "type": "integer" }, "pk": { "type": "boolean" }, "nn": { "type": "boolean" }, "type": { "type": "string" }, "default": { "type": "null" } }, "required": [ "relations", "id", "name", "tableName", "length", "pk", "nn", "type", "default" ] } }, "relations": { "type": "array", "items": { "type": "string" } }, "id": { "type": "string" }, "entityName": { "type": "string" }, "tableName": { "type": "string" }, "namespace": { "type": "string" } }, "required": [ "x", "y", "fields", "relations", "id", "entityName", "tableName", "namespace" ] } }, "relations": { "type": "array", "items": { "type": "object", "properties": { "connectionId": { "type": "string" }, "name": { "type": "string" }, "type": { "type": "integer" }, "hoverClass": { "type": "string" }, "cascadeOptions": { "type": "array", "items": {} }, "sourceEntityId": { "type": "string" }, "targetEntityId": { "type": "string" }, "sourceFieldId": { "type": "string" }, "targetFieldId": { "type": "string" }, "sourceField": { "type": "object", "properties": { "relations": { "type": "array", "items": { "type": "string" } }, "id": { "type": "string" }, "name": { "type": "string" }, "tableName": { "type": "string" }, "length": { "type": "integer" }, "pk": { "type": "boolean" }, "nn": { "type": "boolean" }, "type": { "type": "string" }, "default": { "type": "null" } }, "required": [ "relations", "id", "name", "tableName", "length", "pk", "nn", "type", "default" ] }, "targetField": { "type": "object", "properties": { "relations": { "type": "array", "items": { "type": "string" } }, "id": { "type": "string" }, "name": { "type": "string" }, "tableName": { "type": "string" }, "length": { "type": "integer" }, "pk": { "type": "boolean" }, "nn": { "type": "boolean" }, "type": { "type": "string" }, "default": { "type": "null" } }, "required": [ "relations", "id", "name", "tableName", "length", "pk", "nn", "type", "default" ] }, "targetRelatedFieldId": { "type": "string" }, "tableName": { "type": "string" }, "sourceRelatedFieldId": { "type": "string" } }, "required": [ "connectionId", "name", "type", "hoverClass", "cascadeOptions", "sourceEntityId", "targetEntityId", "sourceFieldId", "targetFieldId", "sourceField", "targetField", "targetRelatedFieldId", "tableName", "sourceRelatedFieldId" ] } } }, "required": [ "entities", "relations" ] }';
+    
     /**
-     * Validate schema format.
+     * Validate request content format
      * 
-     * @param string $jsonData
+     * @param string $data
      * 
      * @return bool
      */
-    public function isValidJson($jsonData)
-    {
-        Assert::stringNotEmpty($jsonData);
-
-        $data = json_decode($jsonData);
-
-        return null !== $data && is_object($data) && property_exists($data, 'id');
+    public function isValidJson($data)
+    {   
+        return $this->validateSchema($data, self::VALID_JSON);
     }
 
     /**
-     * Validate schema.
+     * Validate request content schema
      * 
-     * @param string $jsonData
+     * @param string $data
      * 
      * @return bool
      */
-    public function isValidSaveData($jsonData)
+    public function isValidSaveData($data) 
     {
-        $data = json_decode($jsonData, true);
-
-        if (null === $data || !is_array($data)) {
-            return false;
-        }
-
-        $validateData = array_intersect_key($data, array(
-            'name' => '',
-            'zoom' => '',
-            'schema' => array(
-                'entities' => array(),
-                'relations' => array(),
-            ),
-        ));
-
-        return $validateData['name'] != '' && $this->isValidProccessData(json_encode($validateData['schema']));
+        return $this->validateSchema($data, self::VALID_SAVE_DATA);
     }
-
+    
     /**
-     * Validate schema to be proccessed.
+     * Validade request content schema to be proccessed
      * 
-     * @param string $jsonData
+     * @param string $data
      * 
      * @return bool
      */
-    public function isValidProccessData($jsonData)
+    public function isValidProccessData($data) 
     {
-        $data = json_decode($jsonData, true);
-
-        if (null === $data || !is_array($data)) {
-            return false;
-        }
-
-        $validateData = array_intersect_key($data, array(
-            'entities' => array(),
-            'relations' => array(),
-        ));
-
-        return sizeof($validateData['entities']) > 0 && sizeof($validateData['relations'] > 0);
+        return $this->validateSchema($data, self::VALID_PROCCESS_DATA);
+    }
+    
+    /**
+     * Validate json against schema
+     * 
+     * @param string $data
+     * 
+     * @return bool
+     */
+    public function validateSchema($data, $schema)
+    {
+        Assert::stringNotEmpty($data);
+        Assert::stringNotEmpty($schema);
+        
+        $validator = new Validator();
+        $validator->check($data, $schema);
+        
+        return $validator->isValid();
     }
 }
