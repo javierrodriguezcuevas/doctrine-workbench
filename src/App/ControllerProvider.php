@@ -7,6 +7,7 @@ use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Mst\Controllers\BaseController;
+use Mst\Entity\WorkbenchSchema;
 
 class ControllerProvider extends BaseController implements ControllerProviderInterface
 {
@@ -140,12 +141,14 @@ class ControllerProvider extends BaseController implements ControllerProviderInt
 
         if ($app['schema.validator']->isValidSaveData($content)) {
             $contentData = json_decode($content);
-
-            $result = $app['schema.repository']->save(array(
-                'name' => $contentData->name,
-                'zoom' => $contentData->zoom,
-                'schema' => json_encode($contentData->schema),
-            ));
+            
+            $workbenchSchema = new WorkbenchSchema();
+            $workbenchSchema
+                ->setName($contentData->name)
+                ->setZoom($contentData->zoom)
+                ->setSchema(json_encode($contentData->schema))
+            ;
+            $result = $app['schema.repository']->save($workbenchSchema);
 
             if ($result > 0) {
                 return $this->returnJsonSuccessResponse(array('message' => 'Schema saved.'));
@@ -200,7 +203,8 @@ class ControllerProvider extends BaseController implements ControllerProviderInt
                 $uniqid = uniqid();
                 $filepath = $this->app->getRootDir().'web'.DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR.$uniqid;
                 
-                $app['doctrine_transformer']->handleJsonData($dataJson, 'annotation', $filepath);
+                $type = 'annotation';
+                $app['doctrine_transformer']->handleJsonData($dataJson, $type, $filepath);
 
                 if (false != $app['compressor_manager']->generateZip($filepath, $uniqid.'.zip')) {
                     return $this->returnJsonSuccessResponse(array(
