@@ -11,6 +11,14 @@ use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
  */
 class ViewToModelTransformer
 {    
+    /** @var array */
+    public static $_modelsTransformers = array(
+        'annotation' => 'Mst\Services\ModelTransformer\AnnotationModelTransformer',
+        // Not implemented yet
+        //'yaml' => 'Mst\Services\ModelTransformer\YamlModelTransformer',
+        //'yml' => 'Mst\Services\ModelTransformer\YamlModelTransformer',
+    );
+    
     /**
      * Map entities from json to models
      * 
@@ -19,14 +27,17 @@ class ViewToModelTransformer
      * @param string $dest
      * 
      * @return void 
+     * 
+     * @throws ExportException
+     * @throws InvalidArgumentException
      */
     public function handleJsonData($jsonData, $type, $dest)
     {
-        $exporter = $this->getExporter($type, $dest);
         $parsedData = $this->jsonDecode($jsonData);
-        $parsedDataArray = $this->parseJsonDataToArray($parsedData->entities, $parsedData->relations);
+        $parsedDataArray = $this->parseJsonDataToArray($parsedData->entities, $parsedData->relations, $type);
         $metadatas = $this->parseDataArrayToMetadatas($parsedDataArray);
 
+        $exporter = $this->getExporter($type, $dest);
         $exporter->setMetadata($metadatas);
         $exporter->export();
     }
@@ -36,20 +47,23 @@ class ViewToModelTransformer
      * 
      * @param array $entities
      * @param array $relations
+     * @param string $type
      * 
      * @return array
+     * 
+     * @throws \InvalidArgumentException
      */
-    protected function parseJsonDataToArray(array $entities, array $relations)
+    protected function parseJsonDataToArray(array $entities, array $relations, $type)
     {
         $result = array();
-        
-        $associationMappings = $this->generateAssociationMappings($entities, $relations);
+        $transformer = $this->getModelTransformer($type);
+        $associationMappings = $transformer->generateAssociationMappings($entities, $relations);
         
         foreach ($entities as $entity) {
-            $fieldsMappings = $this->generateFieldsMappings($entity->fields);
+            $fieldsMappings = $transformer->generateFieldsMappings($entity->fields);
             $result[$entity->id] = array(
                 'entityName' => $entity->entityName,
-                'tableName' => $entity->tableName,
+                'tableName' => array('name' => $entity->tableName),
                 'namespace' => $entity->namespace,
                 'fieldMappings' => $fieldsMappings['fieldMappings'],
                 'fieldNames' => $fieldsMappings['fieldNames'],
@@ -93,118 +107,11 @@ class ViewToModelTransformer
         
         return $result;
     }
-    
-    /**
-     * Parse stdObj fields from UI to an array with fieldMappings
-     * 
-     * @param array $fields
-     * 
-     * @return array
-     */
-    protected function generateFieldsMappings(array $fields)
-    {
-        $result = array(
-            'generatorType' => ClassMetadataInfo::GENERATOR_TYPE_NONE,
-            'identifier' => array(),
-        );
-        
-        foreach ($fields as $field) {
-            if (sizeof($field->relations) === 0) {
-                $fm = array(
-                    'fieldName' => $field->name,
-                    'columnName' => $field->tableName,
-                    'type' => $field->type
-                );
 
-                $result['fieldNames'][$field->tableName] = $field->name;
-                $result['columnNames'][$field->name] = $field->tableName;
-
-                if ($field->pk) {
-                    $result['generatorType'] = $this->getGeneratorType($field->strategy);
-                    $fm['id'] = true;
-                } else {
-                    $fm['nullable'] = $field->nn;
-                    $fm['length'] = $field->length;
-                }
-
-                $result['fieldMappings'][] = $fm;
-            } else {
-                $result['identifier'] = array($field->name);
-            }
-        }
-        
-        return $result;
-    }
-
-    /**
-     * Parse stdObj relations from UI to an array with associationMappings
-     * 
-     * @param array $entities
-     * @param array $relations
-     * 
-     * @return array
-     */
-    protected function generateAssociationMappings(array $entities, array $relations) 
-    {
-        $associationMappings = array();
-        
-        $entitiesNames = array();
-        $fieldsNames = array();
-        foreach ($entities as $entity) {
-            $entitiesNames[$entity->id] = $entity->entityName;
-            
-            foreach ($entity->fields as $field) {
-                $fieldsNames[$field->id] = $field->name;
-            }
-        }
-        
-        foreach ($relations as $relation) {
-            $associationMappings[$relation->connectionId][$relation->sourceEntityId] = array(
-                'fieldName' => $relation->sourceField->name,
-                'targetEntity' => $entity->namespace.'\\'.$entitiesNames[$relation->targetEntityId],
-                'mappedBy' => $fieldsNames[$relation->targetField->id],
-                'cascade' => $relation->cascadeOptions,
-                'type' => $this->getRelationType($relation->type, 'source'),
-            );
-            $associationMappings[$relation->connectionId][$relation->targetEntityId] = array(
-                'fieldName' => $relation->targetField->name,
-                'targetEntity' => $entity->namespace.'\\'.$entitiesNames[$relation->sourceEntityId],
-                'inversedBy' => $fieldsNames[$relation->sourceField->id],
-                'cascade' => $relation->cascadeOptions,
-                'type' => $this->getRelationType($relation->type, 'target'),
-                'joinColumns' => array(array(
-                    'name' => $relation->targetField->tableName,
-                    'referencedColumnName' => $fieldsNames[$relation->targetRelatedFieldId]
-                ))
-            );
-            
-            if (3 === $relation->type) {
-                unset($associationMappings[$relation->connectionId][$relation->targetEntityId]['joinColumns']);
-                $associationMappings[$relation->connectionId][$relation->sourceEntityId]['joinTable'] = array(
-                    'name' => $relation->tableName,
-                    'joinColumns' => array(
-                        array(
-                            'name' => $relation->targetField->tableName,
-                            'referencedColumnName' => $fieldsNames[$relation->targetRelatedFieldId]
-                        )
-                    ),
-                    'inverseJoinColumns' => array(
-                        array(
-                            'name' => $relation->sourceField->tableName,
-                            'referencedColumnName' => $fieldsNames[$relation->sourceRelatedFieldId]
-                        )
-                    )
-                );
-            }
-        }
-        
-        return $associationMappings;
-    }
-    
     /**
      * Gets an exporter driver instance.
      *
-     * @param string      $type The type to get (yml, xml, etc.).
+     * @param string      $type The type to get (annotation, yaml, yml, xml, php). Actually only annotation is supported.
      * @param string|null $dest The directory where the exporter will export to.
      *
      * @return Driver\AbstractExporter
@@ -213,6 +120,10 @@ class ViewToModelTransformer
      */
     protected function getExporter($type, $dest = null)
     {
+        if (!array_key_exists($type, self::$_modelsTransformers)) {
+            throw new \InvalidArgumentException("Unsuported Exporter type: '$type'.");
+        }
+        
         $cme = new ClassMetadataExporter();
         $exporter = $cme->getExporter($type, $dest);
         $exporter->setOverwriteExistingFiles(true);
@@ -233,60 +144,23 @@ class ViewToModelTransformer
     }
     
     /**
-     * Gets Doctrine relation type from UI relation type
+     * Get a model transformer instance
      * 
-     * @param int $type
+     * @param type $type The type to get (annotation, yml)
      * 
-     * @return int
+     * @return ModelTransformer
      * 
-     * @throws \Exception
+     * @throws \InvalidArgumentException
      */
-    protected function getRelationType($type, $entityDirection = null)
+    protected function getModelTransformer($type)
     {
-        $types = array(
-            1 => ClassMetadataInfo::ONE_TO_ONE,
-            2 => array(
-                'source' => ClassMetadataInfo::ONE_TO_MANY,
-                'target' => ClassMetadataInfo::MANY_TO_ONE,
-            ),
-            3 => ClassMetadataInfo::MANY_TO_MANY,
-        );
-        
-        if (!array_key_exists($type, $types)) {
-            throw new \Exception('Invalid relation type.');
+        if ( ! isset(self::$_modelsTransformers[$type])) {
+            throw new \InvalidArgumentException("Unsuported ModelTransformer type: '$type'.");
         }
-        
-        if (null !== $entityDirection && !in_array($entityDirection, array('source', 'target'))) {
-            throw new \Exception('Invalid relation type OneToMany/ManyToOne.');
-        }
-        
-        if (2 === $type && null !== $entityDirection) {
-            return $types[$type][$entityDirection];
-        }
-        
-        return $types[$type];
-    }
 
-    /**
-     * Gets Doctrine generatotType from UI strategy
-     * 
-     * @param string $strategy
-     * 
-     * @return int
-     */
-    protected function getGeneratorType($strategy)
-    {
-        $types = array(
-            'AUTO' => ClassMetadataInfo::GENERATOR_TYPE_AUTO
-        );
-        
-        $result = ClassMetadataInfo::GENERATOR_TYPE_NONE;
-        
-        if (array_key_exists($strategy, $types)) {
-            $result = $types[$strategy];
-        }
-        
-        return $result;
+        $class = self::$_modelsTransformers[$type];
+
+        return new $class();
     }
     
     /**
