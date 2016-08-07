@@ -34,6 +34,7 @@
                 <td ng-class="{ 'has-error': fieldForm.name.$invalid && fieldForm.name.$dirty }">
                     <input class="form-control" name="name" type="text"
                            ng-model="field.name"
+                           ng-change="updateTableName(field)"
                            ng-disabled="(field.relations.length > 0)"
                            ng-required="!(field.relations.length > 0)"
                            ng-maxlength="255"

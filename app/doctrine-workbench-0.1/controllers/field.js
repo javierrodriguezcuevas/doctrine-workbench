@@ -11,8 +11,18 @@ DoctrineWorkbenchController.controller('ModalEditFieldsInstanceCtrl', [ '$scope'
         $scope.types = FieldOptionsFactory.getFieldTypes();
         $scope.fields = FieldService.findAll();  
         $scope.strategies = FieldOptionsFactory.getStrategies();
-
         $scope.form = {};
+        
+        $scope.updateTableName = function(field) {
+            var newValue = field.name;
+            var oldValue = field.tableName;
+            
+            if (undefined === newValue ) {
+                field.name = undefined;
+            } else if ( UtilsService.toSnakeCase(newValue) !== oldValue ) {
+                field.tableName = UtilsService.toSnakeCase(newValue);
+            }
+        };
 
         /**
          * Check if field is disabled

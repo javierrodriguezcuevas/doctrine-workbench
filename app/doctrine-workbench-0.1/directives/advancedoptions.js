@@ -12,6 +12,8 @@
                     handle: ".item-move",
                     containment: "parent"
                 });
+                // move to right
+                $wrapper.css('left', $wrapper.parent().width() + $wrapper.parent().offset().left - $wrapper.width());
                 
                 var $move = $(element).prev();
                 $move.find('.item-header button').on('click', function(e) {
