@@ -4,16 +4,15 @@
  * @returns Field
  */
 function Field(data) {
+    this._id;
     this.id;
-    this.name;
-    this.tableName;
+    this.fieldName;
+    this.columnName;
     this.type;
     this.length;
-    this.pk;
-    this.nn;
+    this.nullable;
     this.default;
     this.strategy;
-    this.relations = [];
     
     for (var prop in data) {
         this[prop] = data[prop];

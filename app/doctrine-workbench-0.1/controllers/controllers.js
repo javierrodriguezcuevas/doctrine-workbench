@@ -2,12 +2,10 @@
 
 var DoctrineWorkbenchController = angular.module('DoctrineWorkbenchController', []);
 
-DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$modal', 'ZoomService', 'EntityService', 'FieldService', 'RelationService', 'ConnectionService', 'ValidatorBeforeDrop', 'DraggableWorkbenchService', 'UtilsService', '$translate',
-    function($scope, $http, $modal, ZoomService, EntityService, FieldService, RelationService, ConnectionService, ValidatorBeforeDrop, DraggableWorkbenchService, UtilsService, $translate) {
+DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$modal', 'ZoomService', 'EntityService', 'RelationService', 'ConnectionService', 'ValidatorBeforeDrop', 'DraggableWorkbenchService', 'UtilsService', '$translate',
+    function($scope, $http, $modal, ZoomService, EntityService, RelationService, ConnectionService, ValidatorBeforeDrop, DraggableWorkbenchService, UtilsService, $translate) {
 
         $scope.entities = EntityService.findAll();
-        $scope.connections = ConnectionService.findAll();
-        $scope.relations = RelationService.findAll();
         $scope.currentZoom = 1;
         $scope.currentEntity = null;
         $scope.currentEntityForm = {};
@@ -16,7 +14,6 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
          * On page ready event
          */
         $scope.$on('$viewContentLoaded', function() {
-            
             DraggableWorkbenchService.start();
             
             jsPlumb.setContainer($("#workbench"));
@@ -29,7 +26,7 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
                     if ($scope.currentZoom + zoomStep <= 1.9) {
                         $scope.currentZoom += zoomStep;
                     }
-                } else{
+                } else {
                     if ($scope.currentZoom - zoomStep >= 0.1) {
                         $scope.currentZoom -= zoomStep;
                     }
@@ -41,17 +38,16 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
             });
                 
             jsPlumb.bind("ready", function() {
-                
                 $scope.updateZoom();
                 
                 // binding beforeDrop event allow validate the relation
                 jsPlumb.bind("beforeDrop", function(info) {
-                    // console.log("Dropping a connection");
                     var result = true;
                     
                     if (!ValidatorBeforeDrop.validate(
                             info.connection.source.getAttribute('data-identifier'), 
                             info.connection.target.getAttribute('data-identifier'))) {
+                        // remove created endpoint
                         if (null != info.dropEndpoint) {
                             jsPlumb.deleteEndpoint(info.dropEndpoint);
                         }
@@ -62,20 +58,45 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
                     return result;
                 });
                 
-                $scope.bindNewConnection(); 
+                $scope.bindNewConnectionEvent();
             });
         });
+        
+        /**
+         * Bind jsPlumb new connection event
+         */
+        $scope.bindNewConnectionEvent = function() {
+            // Listener on new connection to create a relation
+            jsPlumb.bind("connection", function(info) {
+                var relationType = ConnectionService.getTypeByHoverClass(info.sourceEndpoint.connectorHoverClass);
+
+                if (null !== relationType) {
+                    var $source = $(info.connection.source);
+                    var $target = $(info.connection.target);
+
+                    var source = EntityService.findById($source.data('identifier'));
+                    var target = EntityService.findById($target.data('identifier'));
+
+                    $scope.newRelation(source, target, info.connection, relationType);
+                }
+            });
+        };
         
         /**
          * Bind events to connection
          * @param jsPlumbConnection connection
          * @param string hoverClass
          */
-        $scope.setConnectionEvents = function(connection, hoverClass) {
-
+        $scope.bindConnectionEvents = function(connection, type) {
+            var hoverClass = ConnectionService.getHoverClassByType(type);
+            var $source = $(connection.source);
+            var $target = $(connection.target);
+            var source = EntityService.findById($source.data('identifier'));
+            var target = EntityService.findById($target.data('identifier'));
+            
             // click listener on connection to edit relation
             connection.bind('click', function(info) {
-                $scope.editRelation(connection);
+                $scope.editRelation(source, target, connection, type);
             });
 
             // listener on item close button to delete connection
@@ -86,6 +107,7 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
             $(deleteIcon).find('.glyphicon-remove').bind('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
+                
                 UtilsService.bsconfirm($translate.instant('label.sure_delete_relation'), function() {
                     $scope.deleteConnection(connection);            
                     // need to update scope to update entity fields
@@ -97,79 +119,22 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
             for (var i = 0, len = connection.endpoints.length; i < len; i++) {
                 connection.endpoints[i]._jsPlumb.hoverClass = hoverClass;
             }
+            
             // bind mouseover, mouseout to items
             connection
                 .bind('mouseover', function(info) {
-                    var source = info.source || info.component.source;
-                    var target = info.target || info.component.target;
-                    $(target).addClass(hoverClass);
-                    $(source).addClass(hoverClass);
+                    $source.addClass(hoverClass);
+                    $target.addClass(hoverClass);
                 }).bind('mouseout', function(info) {
-                    var source = info.source || info.component.source;
-                    var target = info.target || info.component.target;
-                    $(target).removeClass(hoverClass);
-                    $(source).removeClass(hoverClass);
+                    $source.removeClass(hoverClass);
+                    $target.removeClass(hoverClass);
                 });
         };
-        
-        /**
-         * Listener on new connection to create a relation
-         */
-        $scope.bindNewConnection = function() {
-            
-            jsPlumb.bind("connection", function(info) {
-                
-                var relationType = ConnectionService.getTypeByHoverClass(info.sourceEndpoint.connectorHoverClass);
-                
-                if (null !== relationType) {
-                    var $source = $(info.connection.source); //.parents('.item:first');
-                    var $target = $(info.connection.target);
 
-                    var source = EntityService.findById($source.data('identifier'));
-                    var target = EntityService.findById($target.data('identifier'));
-                    
-                    $scope.newRelation(source, target, info.connection, relationType);
-                }
-            });
-        };
-        
-        /**
-         * Change workbench zoom
-         */
-        $scope.updateZoom = function() {
-            ZoomService.changeZoom($scope.currentZoom);
-        };
-        
-        /**
-         * Start a new workbench
-         */
-        $scope.clearWorkbenchConfirmation = function() {
-            if ($scope.entities.length > 0) {
-                UtilsService.bsconfirm($translate.instant('label.sure_new_workbench'), function() {
-                    $scope.clearWorkbench();
-                    $scope.$apply();
-                });
-            } else {
-                $scope.clearWorkbench();
-            }
-        };
-        
-        /**
-         * Delete an entity
-         */
-        $scope.removeEntityConfirmation = function(id) {
-            UtilsService.bsconfirm($translate.instant('label.sure_delete_entity'), function() {
-                jsPlumb.detachAllConnections(id);		
-                $scope.removeEntity(id);
-                $scope.$apply();
-            });
-        };
-        
         /**
          * Save a schema
          */
         $scope.saveSchema = function() {
-            
             UtilsService.bsprompt($translate.instant('label.save_schema_name'), function(value, $input) {
                 if (value != null && value != "") {
                     var box = bootbox.dialog({
@@ -183,8 +148,8 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
                             name: value,
                             zoom: $scope.currentZoom,
                             schema: {
-                                entities: $scope.entities,
-                                relations: $scope.relations
+                                connections: ConnectionService.getFlatConnections(),
+                                entities: $scope.entities
                             }
                         }
                     });
@@ -218,8 +183,8 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
                 method: "post",
                 url: location.origin + location.pathname + "proccess",
                 data: {
-                    entities: $scope.entities,
-                    relations: $scope.relations
+                    connections: ConnectionService.getFlatConnections(),
+                    entities: $scope.entities
                 }
             });
 
@@ -268,10 +233,8 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
          * @param json schema
          */
         $scope.loadSchema = function(schema, zoom) {
-            
             // asyncronous not throws exception $scope.$apply();
             setTimeout(function() {
-
                 $scope.clearWorkbench();
                 
                 $scope.entities = EntityService.findAll();
@@ -290,50 +253,23 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
                 jsPlumb.unbind("connection");
             
                 // create relations
-                for (var i = 0, len = schema.relations.length; i < len; i++) {
-                    
-                    var relationOptions = {
-                        targetRelatedFieldId: schema.relations[i].targetRelatedFieldId
-                    };
-
-                    if (3 === schema.relations[i].type) {
-                        relationOptions['tableName'] = schema.relations[i].tableName;
-                        relationOptions['sourceRelatedFieldId'] = schema.relations[i].sourceRelatedFieldId;
-                    }
-
-                    var r = RelationService.create(
-                        schema.relations[i].connectionId, 
-                        schema.relations[i].type, 
-                        schema.relations[i].sourceEntityId,
-                        schema.relations[i].targetEntityId,
-                        schema.relations[i].sourceField,
-                        schema.relations[i].targetField,
-                        relationOptions
-                    );
-
-                    var source = $('.item[data-identifier=' + r.sourceEntityId + ']');
-                    var target = $('.item[data-identifier=' + r.targetEntityId + ']');
+                for (var i = 0, len = schema.connections.length; i < len; i++) {
+                    var type = schema.connections[i].relationType;
+                    var source = $('.item[data-identifier=' + schema.connections[i].workbenchIds.sourceId + ']');
+                    var target = $('.item[data-identifier=' + schema.connections[i].workbenchIds.targetId + ']');
                     
                     // create connection
-                    var connectorOptions = ConnectionService.getConnectionOptions(r.type);
-                    var c = jsPlumb.connect($.extend(connectorOptions, {
+                    var connectorOptions = ConnectionService.getConnectionOptions(type);
+                    var connection = jsPlumb.connect($.extend(connectorOptions, {
                         source: source, 
                         target: target
                     }));
-                    c.relationId = r.connectionId;
-                    
-                    // bind connection listeners
-                    $scope.setConnectionEvents(c, r.hoverClass);
-                    
-                    // add relations to collection
-                    RelationService.add(r);
-                    
                     // add connection to collection
-                    ConnectionService.add(c);
+                    $scope.addConnection(connection, type, schema.connections[i].workbenchIds);
                 }
                 
                 // bind new connection listener
-                $scope.bindNewConnection();
+                $scope.bindNewConnectionEvent();
 
                 // update zoom
                 $scope.currentZoom = zoom;
@@ -341,42 +277,12 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
             }, 0);
             
         };
-        
-        /**
-         * Set current entity
-         * @param entity
-         */
-        $scope.setCurrentEntity = function(entity) {
-            $('.item').removeClass('item-selected');
-            $('[data-identifier="' + entity.id + '"]').addClass('item-selected');
-            $scope.currentEntity = angular.copy(EntityService.findById(entity.id));
-        };
-        
-        /**
-         * Advanced options submit ok
-         * @param currentEntityForm
-         */
-        $scope.currentEntityOk = function(currentEntityForm) {
-            if (currentEntityForm.$valid) {
-                $scope.updateEntityProperties($scope.currentEntity);
-            }
-        };
-        
-        /**
-         * Advanced options submit cancel
-         * @param currentEntityForm
-         */
-        $scope.currentEntityCancel = function() {
-            var newCurrentEntity = angular.copy(EntityService.findById($scope.currentEntity.id));
-            $scope.currentEntity = newCurrentEntity;
-        };
 
         /**
          * Edit a relation
          * @param connection connection
          */
-        $scope.editRelation = function(connection) {
-            
+        $scope.editRelation = function(source, target, connection, type) {
             var modalInstance = $modal.open({
                 templateUrl: 'modalNewEditRelationContent.html',
                 controller: 'ModalNewEditRelationInstanceCtrl',
@@ -384,29 +290,29 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
                 size: 'lg',
                 resolve: {
                     data: function() {
+                        var sourceRelation = _.find(source.associationMappings, {_id: connection.workbenchIds.sourceRelationId});
+                        var targetRelation = _.find(target.associationMappings, {_id: connection.workbenchIds.targetRelationId});
                         return {
-                            relation: angular.copy(RelationService.findById(connection.relationId)),
+                            type: type,
+                            sourceFields: source.fieldMappings,
+                            targetFields: target.fieldMappings,
+                            sourceRelation: angular.copy(sourceRelation),
+                            targetRelation: angular.copy(targetRelation),
                             isNew: false
                         };
                     }
                 }
             });
 
-            modalInstance.result.then(function(relation) {
+            modalInstance.result.then(function(relations) {
+                // update associationMappings in entities
+                var sourceIndex = _.findIndex(source.associationMappings, {_id: relations.sourceRelation._id});
+                source.associationMappings[sourceIndex] = relations.sourceRelation;
+                EntityService.update(source);
                 
-                var source = EntityService.findById(relation.sourceEntityId);
-                var target = EntityService.findById(relation.targetEntityId);
-    
-                // update source entity field
-                FieldService.load(source.fields);
-                FieldService.update(relation.sourceField);
-
-                // update target entity field
-                FieldService.load(target.fields);
-                FieldService.update(relation.targetField);
-
-                // update relation
-                RelationService.update(relation);
+                var targetIndex = _.findIndex(target.associationMappings, {_id: relations.targetRelation._id});
+                target.associationMappings[targetIndex] = relations.targetRelation;
+                EntityService.update(target);
             }, function() {
 //                console.info('Modal dismissed at: ' + new Date());
             });
@@ -416,7 +322,6 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
          * Create new relacion
          */
         $scope.newRelation = function(source, target, connection, type) {
-            
             var modalInstance = $modal.open({
                 templateUrl: 'modalNewEditRelationContent.html',
                 controller: 'ModalNewEditRelationInstanceCtrl',
@@ -424,74 +329,38 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
                 size: 'lg',
                 resolve: {
                     data: function() {
-                        
-                        var relationId = UtilsService.getUUID();
-                        
-                        FieldService.load(target.fields);
-                        var targetRelatedField = FieldService.findDefaultField();
-                        
-                        var targetField = FieldService.createRelationField(
+                        var relations = RelationService.create(
                             UtilsService.getUUID(), 
-                            UtilsService.toCamelCase(source.entityName),
-                            relationId
-                        );
-                        
-                        FieldService.load(source.fields);
-                        var sourceField = FieldService.createRelationField(
                             UtilsService.getUUID(), 
-                            UtilsService.toCamelCase(target.entityName),
-                            relationId
+                            type, 
+                            [],
+                            source, 
+                            target
                         );
                         
-                        var relationOptions = {
-                            targetRelatedFieldId: targetRelatedField.id
-                        };
-                        
-                        if (3 === type) {
-                            relationOptions['tableName'] = UtilsService.toSnakeCase(source.entityName + "_" + target.entityName);
-                            
-                            var sourceRelatedField = FieldService.findDefaultField();
-                            relationOptions['sourceRelatedFieldId'] = sourceRelatedField.id;
-                        }
-                        
-                        var relation = RelationService.create(
-                            relationId,
-                            type,
-                            source.id,
-                            target.id,
-                            sourceField,
-                            targetField,
-                            relationOptions
-                        );
-                       
                         return {
-                            relation: relation,
+                            type: type,
+                            sourceFields: source.fieldMappings,
+                            targetFields: target.fieldMappings,
+                            sourceRelation: relations.sourceRelation,
+                            targetRelation: relations.targetRelation,
                             isNew: true
                         };
                     }
                 }
             });
 
-            modalInstance.result.then(function(relation) {
-                // set relationId in connection
-                connection.relationId = relation.connectionId;
-                
-                // bind connection listeners
-                $scope.setConnectionEvents(connection, relation.hoverClass);
-                
-                // add relations to collection
-                RelationService.add(relation);
-                
-                // add connection to collection
-                ConnectionService.add(connection);
+            modalInstance.result.then(function(relations) {
+                $scope.addConnection(connection, type, {
+                    'sourceId': source._id,
+                    'targetId': target._id,
+                    'sourceRelationId': relations.sourceRelation._id,
+                    'targetRelationId': relations.targetRelation._id
+                });
                 
                 // update fields relations
-                source.relations.push(relation.connectionId);
-                target.relations.push(relation.connectionId);
-                
-                // update entities fields
-                source.fields.push(relation.sourceField);
-                target.fields.push(relation.targetField);
+                source.associationMappings.push(relations.sourceRelation);
+                target.associationMappings.push(relations.targetRelation);
             }, function() {
                 jsPlumb.detach(connection);
 //                console.info('Modal dismissed at: ' + new Date());
@@ -503,7 +372,6 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
          * @param Entity entity
          */
         $scope.editFields = function(id) {
-            
             var modalInstance = $modal.open({
                 templateUrl: 'modalEditFieldsContent.html',
                 controller: 'ModalEditFieldsInstanceCtrl',
@@ -513,8 +381,10 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
                     data: function() {
                         var entity = EntityService.findById(id);
                         return {
-                            fields: angular.copy(entity.fields),
-                            title: entity.entityName
+                            fieldMappings: angular.copy(entity.fieldMappings),
+                            fieldNames: angular.copy(entity.fieldNames),
+                            columnNames: angular.copy(entity.columnNames),
+                            title: entity.name
                         };
                     }
                 }
@@ -523,8 +393,12 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
             modalInstance.result.then(function(data) {
                 var entity = EntityService.findById(id);
                 
-                entity.fields = data;
+                entity.fieldMappings = data.fieldMappings;
+                entity.fieldNames = data.fieldNames;
+                entity.columnNames = data.columnNames;
                 EntityService.update(entity);
+                
+                $scope.setCurrentEntity(entity);
             }, function() {
 //                console.info('Modal dismissed at: ' + new Date());
             });
@@ -535,7 +409,6 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
          * @param Entity entity
          */
         $scope.editEntity = function(id) {
-            
             var modalInstance = $modal.open({
                 templateUrl: 'modalNewEditEntityContent.html',
                 controller: 'ModalNewEditEntityInstanceCtrl',
@@ -563,7 +436,6 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
          * Create new entity
          */
         $scope.newEntity = function() {
-            
             var modalInstance = $modal.open({
                 templateUrl: 'modalNewEditEntityContent.html',
                 controller: 'ModalNewEditEntityInstanceCtrl',
@@ -581,22 +453,32 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
 
             modalInstance.result.then(function(data) {
                 EntityService.add(data);
+                $scope.setCurrentEntity(data);
             }, function() {
 //                console.info('Modal dismissed at: ' + new Date());
             });
         };
-
+        
+        
         /**
-         * Update entity properties
-         * @param entity
+         * Change workbench zoom
          */
-        $scope.updateEntityProperties = function(entity) {
-            var _entity = EntityService.findById(entity.id);
-            _entity.entityName = entity.entityName;
-            _entity.tableName = entity.tableName;
-            _entity.namespace = entity.namespace;
-            
-            EntityService.update(_entity);
+        $scope.updateZoom = function() {
+            ZoomService.changeZoom($scope.currentZoom);
+        };
+        
+        /**
+         * Start a new workbench
+         */
+        $scope.clearWorkbenchConfirmation = function() {
+            if ($scope.entities.length > 0) {
+                UtilsService.bsconfirm($translate.instant('label.sure_new_workbench'), function() {
+                    $scope.clearWorkbench();
+                    $scope.$apply();
+                });
+            } else {
+                $scope.clearWorkbench();
+            }
         };
 
         /**
@@ -605,8 +487,50 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
         $scope.clearWorkbench = function() {
             jsPlumb.detachEveryConnection();
             for (var i = $scope.entities.length - 1, len = 0; i >= len; i--) {
-                $scope.removeEntity($scope.entities[i].id);
+                $scope.removeEntity($scope.entities[i]._id);
             }
+        };
+
+        /**
+         * Update entity properties
+         * @param entity
+         */
+        $scope.updateEntityProperties = function(entity) {
+            var _entity = EntityService.findById(entity._id);
+            _entity.name = entity.name;
+            _entity.tableName = entity.tableName;
+            _entity.namespace = entity.namespace;
+            
+            EntityService.update(_entity);
+        };        
+        
+        /**
+         * Set current entity
+         * @param entity
+         */
+        $scope.setCurrentEntity = function(entity) {
+            $('.item').removeClass('item-selected');
+            $('[data-identifier="' + entity._id + '"]').addClass('item-selected');
+            $scope.currentEntity = angular.copy(EntityService.findById(entity._id));
+        };
+        
+        /**
+         * Advanced options submit ok
+         * @param currentEntityForm
+         */
+        $scope.currentEntityOk = function(currentEntityForm) {
+            if (currentEntityForm.$valid) {
+                $scope.updateEntityProperties($scope.currentEntity);
+            }
+        };
+        
+        /**
+         * Advanced options submit cancel
+         * @param currentEntityForm
+         */
+        $scope.currentEntityCancel = function() {
+            var newCurrentEntity = angular.copy(EntityService.findById($scope.currentEntity._id));
+            $scope.currentEntity = newCurrentEntity;
         };
         
         /**
@@ -627,21 +551,30 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
             return EntityService.existsByTableName(name, id);
         };
         
+        /**
+         * Delete an entity
+         */
+        $scope.removeEntityConfirmation = function(id) {
+            UtilsService.bsconfirm($translate.instant('label.sure_delete_entity'), function() {
+                jsPlumb.detachAllConnections(id);		
+                $scope.removeEntity(id);
+                $scope.$apply();
+            });
+        };
+        
         /** 
          * Delete an entity
          */
         $scope.removeEntity = function(entityId) {
-            
             // get entity and relations
             var entity = EntityService.findById(entityId);
-            var relations = RelationService.findRelationsById(entity.relations);
+            var connections = ConnectionService.findByAssociationMappings(entity.associationMappings);
             
-            for (var i = 0, len = relations.length; i < len; i++) {
-                // remove connection
-                var c = ConnectionService.findById(relations[i].connectionId);
-                $scope.deleteConnection(c);
+            // remove connections
+            for (var i = 0, len = connections.length; i < len; i++) {
+                $scope.deleteConnection(connections[i]);
             }
-
+            
             // remove entity
             EntityService.remove(entityId);
             
@@ -650,39 +583,42 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
         };
         
         /**
+         * Add a connection and related entities and bind events to connection
+         * @param connection
+         * @param type
+         * @param workbenchIds
+         */
+        $scope.addConnection = function(connection, type, workbenchIds) {
+            connection.relationUuid = UtilsService.getUUID();
+            connection.relationType = type;
+            connection.workbenchIds = workbenchIds;
+
+            // bind connection listeners
+            $scope.bindConnectionEvents(connection, type);
+
+            // add connection to collection
+            ConnectionService.add(connection);
+        };
+        
+        /**
          * Delete a connection and entity related fields
          * @param {type} connection
          */
         $scope.deleteConnection = function(connection) {
-            var relationId = connection.relationId;
+            var sourceRelationId = connection.workbenchIds.sourceRelationId,
+                targetRelationId = connection.workbenchIds.targetRelationId,
+                source = EntityService.findById(connection.workbenchIds.sourceId),
+                target = EntityService.findById(connection.workbenchIds.targetId);
             
-            // get relation
-            var relation = RelationService.findById(relationId);
-            
-            // get related entities
-            var source = EntityService.findById(relation.sourceEntityId);
-            var target = EntityService.findById(relation.targetEntityId);
-            
-            // delete related fields
-            FieldService.load(source.fields);
-            FieldService.remove(relation.sourceField.id);
-            
-            FieldService.load(target.fields);
-            FieldService.remove(relation.targetField.id);
-
             // remove relation from entities relations
-            source.relations = _.remove(source.relations, function(n) {return n !== relationId;});
-            target.relations = _.remove(target.relations, function(n) {return n !== relationId;});
-
-            // remove relation
-            RelationService.remove(relationId);
+            _.remove(source.associationMappings, { 'id': sourceRelationId });
+            _.remove(target.associationMappings, { 'id': targetRelationId });
                 
             // remove connection
-            ConnectionService.remove(relationId);
+            ConnectionService.remove(connection.relationUuid);
             
             // detach connection
             jsPlumb.detach(connection);
         };
-        
     }
 ]);

@@ -4,8 +4,7 @@ DoctrineWorkbenchApp.directive('uniquefieldname', function() {
         require: 'ngModel',
         link: function(scope, elm, attrs, ctrl) {
             ctrl.$parsers.unshift(function(viewValue) {
-
-                if (scope.$eval(attrs.uniquefieldname + '("' + viewValue + '", ' + scope.fields.id + ')')) {
+                if (scope.$parent.$eval(attrs.uniquefieldname + '("' + viewValue + '", "' + scope.field._id + '")')) {
                     // it is invalid, return undefined (no model update)
                     ctrl.$setValidity('uniquefieldname', false);
                     return undefined;

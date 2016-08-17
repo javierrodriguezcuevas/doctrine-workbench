@@ -81,7 +81,8 @@ var DoctrineWorkbenchApp = angular.module('DoctrineWorkbenchApp', [
 DoctrineWorkbenchApp.config(['$routeProvider', '$translateProvider',
     function($routeProvider, $translateProvider) {
         $routeProvider.when('/', {
-            templateUrl: 'views/index.html',
+            //templateUrl: 'views/index.html',
+            templateUrl: '../app/doctrine-workbench-0.1/views/index.html',
             controller: 'IndexController'
         });
         

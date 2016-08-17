@@ -7,7 +7,6 @@ DoctrineWorkbenchApp.directive('uniqueentityproperty', function() {
         },
         link: function(scope, elm, attrs, ctrl) {
             ctrl.$parsers.unshift(function(viewValue) {
-                
                 if (scope.$parent.$eval(attrs.uniqueentityproperty + '("' + viewValue + '", "' + scope.entity.id + '")')) {
                     // it is invalid, return undefined (no model update)
                     ctrl.$setValidity('uniqueentityproperty', false);

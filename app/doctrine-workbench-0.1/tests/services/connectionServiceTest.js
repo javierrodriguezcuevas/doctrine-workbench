@@ -8,19 +8,26 @@ describe('ConnectionServiceTest', function() {
         connectionService = _ConnectionService_;
         
         for (var i = 1; i < 4; i++) {
-            connectionService.add({'relationId': i});
+            connectionService.add({
+                'relationUuid': i, 
+                'workbenchIds': {
+                    sourceId: 'idcategory' + i,
+                    targetId: 'idpost' + i
+                }
+            });
         }        
     }));
 
     it('should return all', function() {
         var connections = connectionService.findAll();
+        
         expect(connections.length).toEqual(3);
     });
     
-    it('should return Connection with relationId 1', function() {
+    it('should return Connection with relationUuid 1', function() {
         var id = 1;
         var connection = connectionService.findById(id);
-        expect(connection.relationId).toEqual(id);
+        expect(connection.relationUuid).toEqual(id);
     });
     
     it('should return relationType 1', function() {
@@ -55,9 +62,9 @@ describe('ConnectionServiceTest', function() {
     
     it('should add a Connection to collection and return it', function() {
         var id = 5;
-        connectionService.add({'relationId': id});
+        connectionService.add({'relationUuid': id});
         var connection = connectionService.findById(id);
-        expect(connection.relationId).toEqual(id);
+        expect(connection.relationUuid).toEqual(id);
     });
     
     it('should update a Connection and return it updated', function() {
@@ -80,6 +87,12 @@ describe('ConnectionServiceTest', function() {
     it('should clear the collection', function() {
         connectionService.clear();
         expect(connectionService.findAll().length).toEqual(0);
+    });
+    
+    it('should exist Connection between source an target', function() {
+        var source = "idcategory1";
+        var target = "idpost1";
+        expect(connectionService.existsRelation(source, target)).toEqual(true);
     });
     
 });

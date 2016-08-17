@@ -18,18 +18,18 @@
         /**
          * Create new pk field
          * @param string id
-         * @param string entityName
-         * @param string tableName
+         * @param string fieldName
+         * @param string columnName
          * @returns Field
          */
-        function createEmptyPkField(id, name, tableName) {
+        function createEmptyPkField(id, fieldName, columnName) {
             return createNewField({
-                id: id,
-                name: name,
-                tableName: tableName,
+                _id: id,
+                fieldName: fieldName,
+                columnName: columnName,
                 length: 0, 
-                pk: true, 
-                nn: false, 
+                id: true, 
+                nullable: false, 
                 type: 'integer',
                 default: null,
                 strategy: 'AUTO'
@@ -39,44 +39,20 @@
         /**
          * Create new field
          * @param string id
-         * @param string entityName
-         * @param string tableName
+         * @param string fieldName
+         * @param string columnName
          * @returns Field
          */
-        function createEmptyField(id, name, tableName) {
+        function createEmptyField(id, fieldName, columnName) {
             return createNewField({
-                id: id,
-                name: name,
-                tableName: tableName,
+                _id: id,
+                fieldName: fieldName,
+                columnName: columnName,
                 length: 255, 
-                pk: false, 
-                nn: false, 
+                id: false, 
+                nullable: false, 
                 default: null,
                 type: 'string'
-            });
-        }
-        
-        /**
-         * Create new relation field
-         * @param string id
-         * @param string entityName
-         * @param string tableName
-         * @returns Field
-         */
-        function createRelationField(id, name, relationId) {
-            var relations = new Array();
-            relations.push(relationId);
-            
-            return createNewField({
-                id: id,
-                name: name,
-                tableName: name,
-                length: 0, 
-                pk: false, 
-                nn: false, 
-                type: '',
-                default: null,
-                relations: relations
             });
         }
 
@@ -98,6 +74,38 @@
         function getFields() {
             return fields;
         }
+
+        /**
+         * Return fieldNames from current fields
+         * @returns Array
+         */
+        function getFieldNames() {
+            // columnName => fieldName
+            var result = _.map(fields, function(value) {
+                var res = {};
+                res[value.columnName] = value.fieldName;
+                
+                return res;
+            });
+            
+            return result;
+        }
+
+        /**
+         * Return columnNames from current fields
+         * @returns Array
+         */
+        function getColumnNames() {
+            // fieldName => columnName
+              var result = _.map(fields, function(value) {
+                var res = {};
+                res[value.fieldName] = value.columnName;
+                
+                return res;
+            });
+            
+            return result;
+        }
         
         /**
          * Check if exists a field by its name
@@ -107,7 +115,7 @@
          */
         function existByFieldName(name, id) {
             return !(_.findIndex(fields, function(field) {
-                return (field.id != id && field.name == name);
+                return (field._id != id && field.fieldName.toLowerCase() == name.toLowerCase());
             }) < 0);
         };
     
@@ -119,7 +127,7 @@
          */
         function existByTableName(name, id) {
             return !(_.findIndex(fields, function(field){ 
-                return (field.id != id && field.tableName == name);
+                return (field._id != id && field.columnName.toLowerCase() == name.toLowerCase());
             }) < 0);
         };
         
@@ -129,7 +137,7 @@
          * @return Field|null
          */
         function findById(id) {
-            return _.find(fields, { 'id': id });
+            return _.find(fields, { '_id': id });
         };
         
         /**
@@ -150,7 +158,7 @@
                 return null;
             }
             
-            var field = _.find(fields, { 'pk': true });
+            var field = _.find(fields, { 'id': true });
             if (field == null) {
                 field = fields[0];
             }
@@ -163,7 +171,7 @@
          * @param Field field
          */
         function updateField(field) {
-            var i = _.findIndex(fields, { 'id': field.id });
+            var i = _.findIndex(fields, { '_id': field._id });
             if (i > -1) {
                 fields[i] = field;
             }
@@ -174,13 +182,15 @@
          * @param string id
          */
         function removeField(id) {
-            _.remove(fields, { 'id': id });
+            _.remove(fields, { '_id': id });
         }
  
         return {
             findAll: getFields,
             findById: findById,
             findDefaultField: findDefaultField,
+            getFieldNames: getFieldNames,
+            getColumnNames: getColumnNames,
             existsByFieldName: existByFieldName,
             existsByTableName: existByTableName,
             add: addField,
@@ -188,7 +198,6 @@
             remove: removeField,
             createEmptyPkField: createEmptyPkField,
             createEmptyField: createEmptyField,
-            createRelationField: createRelationField,
             load: loadFields
         };
     });

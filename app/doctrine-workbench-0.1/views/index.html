@@ -64,25 +64,25 @@
                                 <span class="text-sm">{{ 'label.entity.name' | translate }}</span>
                             </td>
                             <td>
-                                <div ng-class="{ 'has-error': currentEntityForm.entityName.$invalid && currentEntityForm.entityName.$dirty }">
-                                    <input class="form-control input-xs" name="entityName" type="text" required
-                                        ng-model="currentEntity.entityName"
+                                <div ng-class="{ 'has-error': currentEntityForm.name.$invalid && currentEntityForm.name.$dirty }">
+                                    <input class="form-control input-xs" name="name" type="text" required
+                                        ng-model="currentEntity.name"
                                         ng-maxlength="255"
                                         uniqueentityproperty="existByEntityName"
                                         entity="currentEntity"
                                     />
                                     <span class="help-block nomargin-bottom text-sm"
-                                        ng-show="currentEntityForm.entityName.$error.required 
-                                        && currentEntityForm.entityName.$invalid 
-                                        && currentEntityForm.entityName.$dirty">{{ 'error.required' | translate }}</span>
+                                        ng-show="currentEntityForm.name.$error.required 
+                                        && currentEntityForm.name.$invalid 
+                                        && currentEntityForm.name.$dirty">{{ 'error.required' | translate }}</span>
                                     <span class="help-block nomargin-bottom text-sm" 
-                                        ng-show="currentEntityForm.entityName.$error.maxlength 
-                                        && currentEntityForm.entityName.$invalid 
-                                        && currentEntityForm.entityName.$dirty">{{ 'error.maxlength' | translate }}</span>
+                                        ng-show="currentEntityForm.name.$error.maxlength 
+                                        && currentEntityForm.name.$invalid 
+                                        && currentEntityForm.name.$dirty">{{ 'error.maxlength' | translate }}</span>
                                     <span class="help-block nomargin-bottom text-sm" 
-                                        ng-show="currentEntityForm.entityName.$error.uniqueentityproperty 
-                                        && currentEntityForm.entityName.$invalid 
-                                        && currentEntityForm.entityName.$dirty">{{ 'error.exists' | translate }}</span>
+                                        ng-show="currentEntityForm.name.$error.uniqueentityproperty 
+                                        && currentEntityForm.name.$invalid 
+                                        && currentEntityForm.name.$dirty">{{ 'error.exists' | translate }}</span>
                                 </div>
                             </td>
                         </tr>
@@ -93,7 +93,7 @@
                             <td>
                                 <div ng-class="{ 'has-error': currentEntityForm.tableName.$invalid && currentEntityForm.tableName.$dirty }">
                                     <input class="form-control input-xs" name="tableName" type="text" required
-                                        ng-model="currentEntity.tableName"
+                                        ng-model="currentEntity.tableName.name"
                                         ng-maxlength="255"
                                         uniqueentityproperty="existByTableName"
                                         entity="currentEntity"
@@ -144,45 +144,45 @@
         </div>
     </div>
     <div id="workbench">
-        <div plumb-item class="item" ng-repeat="entity in entities" ng-style="{'left': entity.x, 'top': entity.y }" ng-click="setCurrentEntity(entity)" data-identifier="{{entity.id}}">
+        <div plumb-item class="item" ng-repeat="entity in entities" ng-style="{'left': entity._x, 'top': entity._y }" ng-click="setCurrentEntity(entity)" data-identifier="{{entity._id}}">
             <div class="item-header-wrapper">
                 <div class="item-move"></div>
                 <div class="item-header">
-                    <button type="button" class="close" ng-click="removeEntityConfirmation(entity.id)"><span>×</span>&nbsp;</button>
+                    <button type="button" class="close" ng-click="removeEntityConfirmation(entity._id)"><span>×</span>&nbsp;</button>
                 </div>
             </div>
             <div class="col-lg-12 item-container">
                 <div class="form-group">
                     <button type="button"
                             class="btn btn-primary btn-xs pull-left" 
-                            ng-click="editEntity(entity.id)"
+                            ng-click="editEntity(entity._id)"
                             tooltip-placement="top" 
                             tooltip-append-to-body="true" 
                             tooltip="{{ 'label.edit_entity' | translate }}">
                         <i class="icon icon-edit"></i>
                     </button>
-                    <label class="label-align-xs">{{ entity.entityName }}</label>
+                    <label class="label-align-xs">{{ entity.name }}</label>
                 </div>
                 <div  class="form-group">
                     <button type="button"
                             class="btn btn-info btn-xs pull-left"
-                            ng-click="editFields(entity.id)"
+                            ng-click="editFields(entity._id)"
                             tooltip-placement="top" 
                             tooltip-append-to-body="true" 
                             tooltip="{{ 'label.edit_fields' | translate }}">
                         <i class="icon icon-list"></i>
                     </button>
-                    <label class="label-align-xs">{{ 'label.entity.fields' | translate }}: </label>{{ entity.fields.length }}
+                    <label class="label-align-xs">{{ 'label.entity.fields' | translate }}: </label>{{ entity.fieldMappings.length }}
                 </div>
                 <div class="clearfix"></div>
-                <div class="btn-group btn-group-justified" data-identifier="{{entity.id}}">
-                    <span plumb-connect-one-to-one class="one-to-one btn btn-xs no-draggable" ng-disabled="entity.fields.length == 0">
+                <div class="btn-group btn-group-justified" data-identifier="{{entity._id}}">
+                    <span plumb-connect-one-to-one class="one-to-one btn btn-xs no-draggable" ng-disabled="entity.fieldMappings.length == 0">
                         <i class="icon icon-tree"></i>
                     </span>
-                    <span plumb-connect-one-to-many class="one-to-many btn btn-xs no-draggable" ng-disabled="entity.fields.length == 0">
+                    <span plumb-connect-one-to-many class="one-to-many btn btn-xs no-draggable" ng-disabled="entity.fieldMappings.length == 0">
                         <i class="icon icon-tree2"></i>
                     </span>
-                    <span plumb-connect-many-to-many class="many-to-many btn btn-xs no-draggable" ng-disabled="entity.fields.length == 0">
+                    <span plumb-connect-many-to-many class="many-to-many btn btn-xs no-draggable" ng-disabled="entity.fieldMappings.length == 0">
                         <i class="icon icon-tree3"></i>
                     </span>
                 </div>
@@ -191,7 +191,7 @@
         </div>
     </div>
 </div>
-
+<!--
 <div ng-include="'fieldsOptionsContent.html'"></div>
 <div ng-include="'manyToManyContent.html'"></div>
 <div ng-include="'modalEditFieldsContent.html'"></div>
@@ -201,3 +201,14 @@
 <div ng-include="'modalTemplate.html'"></div>
 <div ng-include="'oneToManyContent.html'"></div>
 <div ng-include="'oneToOneContent.html'"></div>
+-->
+
+<div ng-include="'../app/doctrine-workbench-0.1/views/fieldsOptionsContent.html'"></div>
+<div ng-include="'../app/doctrine-workbench-0.1/views/manyToManyContent.html'"></div>
+<div ng-include="'../app/doctrine-workbench-0.1/views/modalEditFieldsContent.html'"></div>
+<div ng-include="'../app/doctrine-workbench-0.1/views/modalLoadSchema.html'"></div>
+<div ng-include="'../app/doctrine-workbench-0.1/views/modalNewEditEntityContent.html'"></div>
+<div ng-include="'../app/doctrine-workbench-0.1/views/modalNewEditRelationContent.html'"></div>
+<div ng-include="'../app/doctrine-workbench-0.1/views/modalTemplate.html'"></div>
+<div ng-include="'../app/doctrine-workbench-0.1/views/oneToManyContent.html'"></div>
+<div ng-include="'../app/doctrine-workbench-0.1/views/oneToOneContent.html'"></div>

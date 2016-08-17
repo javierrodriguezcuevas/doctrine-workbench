@@ -6,6 +6,44 @@
         
         var connections = new Array();
         
+        function getFlatConnections() {
+            var result = _.map(connections, function(value) {
+                return {
+                    relationUuid: value.relationUuid,
+                    relationType: value.relationType,
+                    workbenchIds: value.workbenchIds
+                };
+            });
+            
+            return result;
+        }
+        
+        /**
+         * Returns hover cssClass by type
+         * @param int relationType
+         * @returns string hoverClass
+         */
+        function getHoverClassByType(relationType) {
+            var hoverClass = null;
+            
+            switch (relationType) {
+                case 1: 
+                    return 'oneToOneHover';
+                break;
+                case 2: 
+                    return 'oneToManyHover';
+                break;
+                case 3: 
+                    return 'manyToManyHover';
+                break;
+                case 4: 
+                    return 'oneToManyHover';
+                break;
+            }
+            
+            return hoverClass;
+        }
+        
         /**
          * Returns connection type by css class
          * @param string hoverClass
@@ -75,8 +113,37 @@
          * @return Relation/null
          */
         function findById(id) {
-            return _.find(connections, { 'relationId': id });
+            return _.find(connections, { 'relationUuid': id });
         };
+        
+        /**
+         * Returns connections associated to associationMappings
+         * @param array associationMappings
+         * @returns array
+         */
+        function findByAssociationMappings(associationMappings) {
+            var mappingsIds = _.map(associationMappings, function(value) {
+                return value._id;
+            });
+            
+            return _.intersectionWith(connections, mappingsIds, function(connection, mappingId) {
+                return (mappingId == connection.workbenchIds.sourceRelationId || mappingId == connection.workbenchIds.targetRelationId);
+            });
+        }
+        
+        /**
+         * Check if exists a relation between source and target
+         * @param string sourceRelationId
+         * @param string targetRelationId
+         * @returns Boolean
+         */
+        function existsRelation(sourceId, targetId) {
+            return !(_.findIndex(connections, function(connection) {
+                return (sourceId == connection.workbenchIds.sourceId && targetId == connection.workbenchIds.targetId
+                    ||  targetId == connection.workbenchIds.sourceId && sourceId == connection.workbenchIds.targetId
+                    );
+            }) < 0);
+        }
         
         /**
          * Add new connection to collection
@@ -91,7 +158,7 @@
          * @param Relation relation
          */
         function updateConnection(connection) {
-            var i = _.findIndex(connections, { 'relationId': connection.relationId });
+            var i = _.findIndex(connections, { 'relationUuid': connection.relationUuid });
             if (i > -1) {
                 connection[i] = connection;
             }
@@ -102,7 +169,7 @@
          * @param string id id del elemento a eliminar
          */
         function removeConnection(id) {
-            _.remove(connections, { 'relationId': id });
+            _.remove(connections, { 'relationUuid': id });
         }
         
         /**
@@ -115,12 +182,16 @@
         return {
             findAll: getConnections,
             findById: findById,
+            findByAssociationMappings: findByAssociationMappings,
+            existsRelation: existsRelation,
             add: addConnection,
             update: updateConnection,
             remove: removeConnection,
             clear: clear,
             getConnectionOptions: getConnectionOptions,
-            getTypeByHoverClass: getTypeByHoverClass
+            getTypeByHoverClass: getTypeByHoverClass,
+            getHoverClassByType: getHoverClassByType,
+            getFlatConnections: getFlatConnections
         };
     });
 

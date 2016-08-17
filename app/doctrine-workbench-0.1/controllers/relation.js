@@ -5,19 +5,16 @@
  */
 DoctrineWorkbenchController.controller('ModalNewEditRelationInstanceCtrl', [ '$scope', '$modalInstance', 'data', 'EntityService', 'RelationOptionsFactory', '$translate',
     function($scope, $modalInstance, data, EntityService, RelationOptionsFactory, $translate) {
-
-        var source = EntityService.findById(data.relation.sourceEntityId);
-        var target = EntityService.findById(data.relation.targetEntityId);
-
+        
         $scope.isNew = data.isNew;
-        $scope.sourceEntityName = source.entityName;
-        $scope.targetEntityName = target.entityName;
-        $scope.entities = EntityService.findAll();
-        $scope.relation = data.relation;
-        $scope.fieldsTarget = EntityService.findById(data.relation.targetEntityId).fields;
-        $scope.fieldsSource = EntityService.findById(data.relation.sourceEntityId).fields;
+        $scope.type = data.type;
+        $scope.sourceEntityName = data.targetRelation.targetEntity;
+        $scope.targetEntityName = data.sourceRelation.targetEntity;
+        $scope.sourceRelation = data.sourceRelation;
+        $scope.targetRelation = data.targetRelation;
+        $scope.fieldsTarget = data.sourceFields;
+        $scope.fieldsSource = data.targetFields;
         $scope.cascadeOptions = RelationOptionsFactory.getCascadeOptions();
-
         $scope.form = {};
 
         $scope.multiselectSettings = {
@@ -35,7 +32,10 @@ DoctrineWorkbenchController.controller('ModalNewEditRelationInstanceCtrl', [ '$s
 
         $scope.ok = function(form) {
             if (form.$valid) {
-                $modalInstance.close($scope.relation);
+                $modalInstance.close({
+                    'sourceRelation': $scope.sourceRelation,
+                    'targetRelation': $scope.targetRelation
+                });
             }
         };
 

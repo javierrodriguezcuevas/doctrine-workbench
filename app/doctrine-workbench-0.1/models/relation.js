@@ -4,23 +4,21 @@
  * @returns OneToOneRelation
  */
 function OneToOneRelation(data) {
-    this.connectionId = new Date().getTime();
-    this.name = "One to one";
+    this._id = new Date().getTime();
+    this._name = "One to one";
+    this.fieldName;
+    this.targetEntity;
     this.type = 1;
-    this.hoverClass = 'oneToOneHover';
-    this.cascadeOptions = [];
-    this.sourceEntityId;
-    this.targetEntityId;
-    this.direction;
-    this.sourceRelatedFieldId;
-    this.targetRelatedFieldId;
-    this.sourceField;
-    this.targetField;
+    this.cascade = [];
+    this.inversedBy;
+    this.mappedBy;
+    this.joinColumns = [];
     
     for (var prop in data) {
         this[prop] = data[prop];
     }
 }
+
 
 /**
  * One to many relation model
@@ -28,18 +26,36 @@ function OneToOneRelation(data) {
  * @returns OneToManyRelation
  */
 function OneToManyRelation(data) {
-    this.connectionId = new Date().getTime();
-    this.name = "One to many";
+    this._id = new Date().getTime();
+    this._name = "One to many";
+    this.fieldName;
+    this.targetEntity;
     this.type = 2;
-    this.hoverClass = 'oneToManyHover';
-    this.cascadeOptions = [];
-    this.sourceEntityId;
-    this.targetEntityId;
-    this.direction;
-    this.sourceRelatedFieldId;
-    this.targetRelatedFieldId;
-    this.sourceField;
-    this.targetField;
+    this.cascade = [];
+    this.inversedBy;
+    this.mappedBy;
+    this.joinColumns = [];
+    
+    for (var prop in data) {
+        this[prop] = data[prop];
+    }
+}
+
+/**
+ * Many to one relation model
+ * @param object data
+ * @returns ManyToOneRelation
+ */
+function ManyToOneRelation(data) {
+    this._id = new Date().getTime();
+    this._name = "Many to one";
+    this.fieldName;
+    this.targetEntity;
+    this.type = 4;
+    this.cascade = [];
+    this.inversedBy;
+    this.mappedBy;
+    this.joinColumns = [];
     
     for (var prop in data) {
         this[prop] = data[prop];
@@ -52,21 +68,15 @@ function OneToManyRelation(data) {
  * @returns ManyToManyRelation
  */
 function ManyToManyRelation(data) {
-    this.connectionId = new Date().getTime();
-    this.name = "Many to many";
+    this._id = new Date().getTime();
+    this._name = "Many to many";
+    this.fieldName;
+    this.targetEntity;
     this.type = 3;
-    this.hoverClass = 'manyToManyHover';
-    this.cascadeOptions = [];
-    this.sourceEntityId;
-    this.targetEntityId;
-    this.direction;
-    this.tableName;
-    this.sourceRelatedFieldId;
-    this.targetRelatedFieldId;
-    this.sourceField;
-    this.targetField;
-    this.sourceManyManyField;
-    this.targetManyManyField;
+    this.cascade = [];
+    this.inversedBy;
+    this.mappedBy;
+    this.joinTable = [];
     
     for (var prop in data) {
         this[prop] = data[prop];

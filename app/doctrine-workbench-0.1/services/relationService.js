@@ -2,7 +2,8 @@
  
 (function () {
  
-    DoctrineWorkbenchApp.service('RelationService', function () {
+    DoctrineWorkbenchApp.service('RelationService', ['FieldService', 'UtilsService',
+        function (FieldService, UtilsService) {
         
         var relations = new Array();
 
@@ -19,27 +20,71 @@
                    return new OneToManyRelation(relation);
                 case 3:
                     return new ManyToManyRelation(relation);
+                case 4:
+                    return new ManyToOneRelation(relation);
                 default:
                     return null;
             }
         };
 
-        function createRelation(id, type, sourceEntityId, targetEntityId, sourceField, targetField, relationOptions) {
-            
-            var relationBase = {
-                connectionId: id,
-                type: type,
-                sourceEntityId: sourceEntityId, 
-                targetEntityId: targetEntityId,
-                sourceFieldId: sourceField.id,
-                targetFieldId: targetField.id,
-                sourceField: sourceField,
-                targetField: targetField
+        //function createRelation(id, type, sourceEntityId, targetEntityId, sourceField, targetField, relationOptions) {
+        //function createRelation(id, type, side, fieldName, targetEntity, cascade, sourceMappedFieldName, targetMappedFieldName) {
+        function createRelation(sourceId, targetId, type, cascade, source, target) {            
+            var camelSourceEntityName = UtilsService.toCamelCase(source.name),
+                camelTargetEntityName = UtilsService.toCamelCase(target.name),
+                sourceRelationOptions = {
+                    _id: sourceId,
+                    type: type,
+                    fieldName: camelTargetEntityName,
+                    targetEntity: target.name,
+                    mappedBy: camelSourceEntityName,
+                    cascade: cascade
+            },
+                targetRelationOptions = {
+                    _id: targetId,
+                    type: type,
+                    fieldName: camelSourceEntityName,
+                    targetEntity: source.name,
+                    inversedBy: camelTargetEntityName,
+                    cascade: cascade
             };
+
+            if (1 === type || 2 === type) {
+                FieldService.load(source.fieldMappings);
+                targetRelationOptions['joinColumns'] = [
+                    {
+                        'name': UtilsService.toSnakeCase(FieldService.findDefaultField().columnName + '_' + source.name),
+                        'referencedColumnName': FieldService.findDefaultField().columnName
+                    }
+                ];
+            }
+
+            if (3 === type) {
+                FieldService.load(source.fieldMappings);
+                var sourceDefaultFieldName = FieldService.findDefaultField().columnName;
+                FieldService.load(target.fieldMappings);
+                var targetDefaultFieldName = FieldService.findDefaultField().columnName;
+                sourceRelationOptions['joinTable'] = {
+                    'name': UtilsService.toSnakeCase(source.name + '_' + target.name),
+                    'joinColumns': [
+                        {
+                            'name': sourceDefaultFieldName,
+                            'referencedColumnName': targetDefaultFieldName
+                        }
+                    ],
+                    'inverseJoinColumns': [
+                        {
+                            'name': targetDefaultFieldName,
+                            'referencedColumnName': sourceDefaultFieldName
+                        }
+                    ]
+                }
+            }
             
-            var relation = _.extend({}, relationBase, relationOptions);
-            
-            return getRelationByType(relation);
+            return {
+                'sourceRelation': getRelationByType(sourceRelationOptions),
+                'targetRelation': getRelationByType(targetRelationOptions)
+            };
         }
 
         /**
@@ -56,7 +101,7 @@
          * @return Relation|null
          */
         function findById(id) {
-            return _.find(relations, { 'connectionId': id });
+            return _.find(relations, { '_id': id });
         };
         
         /**
@@ -69,7 +114,7 @@
 
             for (var i = 0, len = relations.length; i < len; i++) {
                 for (var j = 0, _len = ids.length; j < _len; j++) {
-                    if (relations[i].connectionId == ids[j]) {
+                    if (relations[i]._id == ids[j]) {
                         results.push(relations[i]);
                     }
                 }
@@ -77,17 +122,7 @@
 
             return results;
         }
-        
-        /**
-         * Check if exists a relation between source and target
-         * @param string sourceId
-         * @param string targetId
-         * @returns Boolean
-         */
-        function existsRelation(sourceId, targetId) {
-            return !(_.findIndex(relations, { 'sourceEntityId': sourceId, 'targetEntityId': targetId }) < 0);
-        }
-        
+                
         /**
          * Add new relation to collection
          * @param Relation relation
@@ -101,7 +136,7 @@
          * @param Relation relation
          */
         function updateRelation(relation) {
-            var i = _.findIndex(relations, { 'connectionId': relation.connectionId });
+            var i = _.findIndex(relations, { '_id': relation._id });
             if (i > -1) {
                 relations[i] = relation;
             }
@@ -112,7 +147,7 @@
          * @param string id
          */
         function removeRelation(id) {
-            _.remove(relations, { 'connectionId': id });
+            _.remove(relations, { '_id': id });
         }
         
         function clear() {
@@ -123,13 +158,12 @@
             findAll: getRelations,
             findById: findById,
             findRelationsById: findRelationsById,
-            existsRelation: existsRelation, 
             add: addRelation,
             update: updateRelation,
             remove: removeRelation,
             create: createRelation,
             clear: clear
         };
-    });
+    }]);
  
 })();

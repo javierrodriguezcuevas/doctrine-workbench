@@ -3,9 +3,8 @@
 (function () {
  
     DoctrineWorkbenchApp.service('EntityService', function () {
-        
         var entities = new Array();
-
+        
         /**
          * Create new entity
          * @param string entityName
@@ -13,11 +12,13 @@
          * @param string namespace
          * @returns Entity
          */
-        function createEntity(id, entityName, tableName, namespace) {
+        function createEntity(id, name, tableName, namespace) {
             return new Entity({
-                id: id,
-                entityName: entityName,
-                tableName: tableName,
+                _id: id,
+                name: name,
+                tableName: {
+                    'name': tableName
+                },
                 namespace: namespace
             });
         }
@@ -38,7 +39,7 @@
          */
         function existByEntityName(name, id) {
             return !(_.findIndex(entities, function(entity) {
-                return (entity.id != id && entity.entityName == name);
+                return (entity._id != id && entity.name.toLowerCase() == name.toLowerCase());
             }) < 0);
         };
     
@@ -50,7 +51,7 @@
          */
         function existByTableName(name, id) {
             return !(_.findIndex(entities, function(entity){ 
-                return (entity.id != id && entity.tableName == name);
+                return (entity._id != id && entity.tableName.name.toLowerCase() == name.toLowerCase());
             }) < 0);
         };
         
@@ -60,7 +61,7 @@
          * @return Entity|null
          */
         function findById(id) {
-            return _.find(entities, { 'id': id });
+            return _.find(entities, { '_id': id });
         };
         
         /**
@@ -76,7 +77,7 @@
          * @param Entity entity
          */
         function updateEntity(entity) {
-            var i = _.findIndex(entities, { 'id': entity.id });
+            var i = _.findIndex(entities, { '_id': entity.id });
             if (i > -1) {
                 entities[i] = entity;
             }
@@ -87,7 +88,7 @@
          * @param string id
          */
         function removeEntity(id) {
-            _.remove(entities, { 'id': id });
+            _.remove(entities, { '_id': id });
         }
         
         /**

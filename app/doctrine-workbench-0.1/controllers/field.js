@@ -6,21 +6,21 @@
 DoctrineWorkbenchController.controller('ModalEditFieldsInstanceCtrl', [ '$scope', '$modalInstance', 'data', 'FieldService', 'FieldOptionsFactory', 'UtilsService',
     function($scope, $modalInstance, data, FieldService, FieldOptionsFactory, UtilsService) {
     
-        FieldService.load(data.fields);
+        FieldService.load(data.fieldMappings);
         $scope.title = data.title;
         $scope.types = FieldOptionsFactory.getFieldTypes();
-        $scope.fields = FieldService.findAll();  
+        $scope.fieldMappings = FieldService.findAll();  
         $scope.strategies = FieldOptionsFactory.getStrategies();
         $scope.form = {};
         
         $scope.updateTableName = function(field) {
-            var newValue = field.name;
-            var oldValue = field.tableName;
+            var newValue = field.fieldName;
+            var oldValue = field.columnName;
             
-            if (undefined === newValue ) {
-                field.name = undefined;
-            } else if ( UtilsService.toSnakeCase(newValue) !== oldValue ) {
-                field.tableName = UtilsService.toSnakeCase(newValue);
+            if (undefined === newValue) {
+                field.fieldName = undefined;
+            } else if (UtilsService.toSnakeCase(newValue) !== oldValue) {
+                field.columnName = UtilsService.toSnakeCase(newValue);
             }
         };
 
@@ -32,7 +32,7 @@ DoctrineWorkbenchController.controller('ModalEditFieldsInstanceCtrl', [ '$scope'
         $scope.isFieldDisabled = function(fieldType, key) {
             var result = true;
 
-            if ("" !== fieldType) {
+            if (undefined !== fieldType) {
                 var type = _.find($scope.types, {id: fieldType});
 
                 result = !(type[key]);
@@ -49,7 +49,7 @@ DoctrineWorkbenchController.controller('ModalEditFieldsInstanceCtrl', [ '$scope'
         $scope.isLengthRequired = function(fieldType) {
             var result = false;
 
-            if ("" !== fieldType) {
+            if (undefined !== fieldType) {
                 var type = _.find($scope.types, {id: fieldType});
 
                 result = !!(type.length);
@@ -64,7 +64,7 @@ DoctrineWorkbenchController.controller('ModalEditFieldsInstanceCtrl', [ '$scope'
          * @return boolean 
          */
         $scope.existFieldName = function(name, id) {
-            FieldService.existsByFieldName(name, id);
+            return FieldService.existsByFieldName(name, id);
         };
 
         /**
@@ -85,7 +85,11 @@ DoctrineWorkbenchController.controller('ModalEditFieldsInstanceCtrl', [ '$scope'
 
         $scope.ok = function(form) {
             if (!form.$invalid) {
-                $modalInstance.close(FieldService.findAll());
+                $modalInstance.close({
+                    fieldMappings: FieldService.findAll(),
+                    fieldNames: FieldService.getFieldNames(),
+                    columnNames: FieldService.getColumnNames()
+                });
             }
         };
 
