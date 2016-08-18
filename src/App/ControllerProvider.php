@@ -204,7 +204,9 @@ class ControllerProvider extends BaseController implements ControllerProviderInt
                 $filepath = $this->app->getRootDir().'web'.DIRECTORY_SEPARATOR.'temp'.DIRECTORY_SEPARATOR.$uniqid;
                 
                 $type = 'annotation';
-                $app['doctrine_transformer']->handleJsonData($dataJson, $type, $filepath);
+                $metadatas = $app['doctrine_transformer']->handleJsonData($dataJson);
+                
+                $app['doctrine_transformer']->export($metadatas, $type, $filepath);
 
                 if (false != $app['compressor_manager']->generateZip($filepath, $uniqid.'.zip')) {
                     return $this->returnJsonSuccessResponse(array(
