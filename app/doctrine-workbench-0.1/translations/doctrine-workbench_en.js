@@ -29,6 +29,7 @@ var translations_EN = {
     'label.length': 'Length',
     'label.pk': 'PK',
     'label.nn': 'NN',
+    'label.nullable': 'Nullable',
     'label.strategy': 'Strategy',
     'label.new_entity': 'New entity',
     'label.edit_entity': 'Edit entity',

@@ -69,6 +69,17 @@ fieldset.border legend {
     min-height: 34px !important;
 }
 
+.form-horizontal .checkbox.fixed-checkbox {
+    padding-top: 0px;
+    padding-left: 15px;
+}
+.form-horizontal .checkbox.fixed-checkbox label:before {
+    top: -5px !important;
+}
+.form-horizontal .checkbox.fixed-checkbox label:after {
+    top: -5px !important;
+}
+
 .form-horizontal .control-label {
     font-size: 12px;
 }

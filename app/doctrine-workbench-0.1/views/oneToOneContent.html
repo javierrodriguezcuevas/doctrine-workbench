@@ -94,5 +94,16 @@
                 && form.sourceFieldTableName.$dirty">{{ 'error.maxlength' | translate }}</p>
         </div>
     </div>
+    <div>
+        <label class="col-lg-4 col-md-4 control-label">{{ 'label.nullable' | translate }}</label>
+        <div class="col-lg-8 col-md-8">
+            <div class="checkbox fixed-checkbox">
+                <input class="checkbox" type="checkbox" 
+                    ng-model="targetRelation.joinColumns[0].nullable"
+                />
+                <label></label>
+            </div>
+        </div>
+    </div>
 </fieldset>
 </script>

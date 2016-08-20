@@ -55,7 +55,8 @@
                 targetRelationOptions['joinColumns'] = [
                     {
                         'name': UtilsService.toSnakeCase(FieldService.findDefaultField().columnName + '_' + source.name),
-                        'referencedColumnName': FieldService.findDefaultField().columnName
+                        'referencedColumnName': FieldService.findDefaultField().columnName,
+                        'nullable': false
                     }
                 ];
             }

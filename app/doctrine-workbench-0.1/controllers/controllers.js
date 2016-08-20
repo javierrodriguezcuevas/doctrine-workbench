@@ -351,6 +351,7 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
             });
 
             modalInstance.result.then(function(relations) {
+                connection.relationUuid = UtilsService.getUUID();
                 $scope.addConnection(connection, type, {
                     'sourceId': source._id,
                     'targetId': target._id,
@@ -591,7 +592,6 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
          * @param workbenchIds
          */
         $scope.addConnection = function(connection, type, workbenchIds) {
-            connection.relationUuid = UtilsService.getUUID();
             connection.relationType = type;
             connection.workbenchIds = workbenchIds;
 
