@@ -396,6 +396,8 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
                 entity.fieldMappings = data.fieldMappings;
                 entity.fieldNames = data.fieldNames;
                 entity.columnNames = data.columnNames;
+                entity.identifier = data.identifier;
+                entity.generatorType = data.generatorType;
                 EntityService.update(entity);
                 
                 $scope.setCurrentEntity(entity);
@@ -611,8 +613,8 @@ DoctrineWorkbenchController.controller('IndexController', ['$scope', '$http', '$
                 target = EntityService.findById(connection.workbenchIds.targetId);
             
             // remove relation from entities relations
-            _.remove(source.associationMappings, { 'id': sourceRelationId });
-            _.remove(target.associationMappings, { 'id': targetRelationId });
+            _.remove(source.associationMappings, { '_id': sourceRelationId });
+            _.remove(target.associationMappings, { '_id': targetRelationId });
                 
             // remove connection
             ConnectionService.remove(connection.relationUuid);

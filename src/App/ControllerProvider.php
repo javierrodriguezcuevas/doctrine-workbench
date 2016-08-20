@@ -216,7 +216,7 @@ class ControllerProvider extends BaseController implements ControllerProviderInt
 
                 return $this->returnJsonFailResponse('Error: generating zip.');
             } catch (\Exception $e) {
-                return $this->returnJsonFailResponse($e->getMessage());
+                return $this->returnJsonFailResponse($e->getMessage().'<br>'.$e->getTraceAsString());
             }
         }
 

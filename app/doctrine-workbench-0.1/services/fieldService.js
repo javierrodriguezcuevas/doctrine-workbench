@@ -27,12 +27,11 @@
                 _id: id,
                 fieldName: fieldName,
                 columnName: columnName,
-                length: 0, 
                 id: true, 
                 nullable: false, 
                 type: 'integer',
                 default: null,
-                strategy: 'AUTO'
+                strategy: 1
             });
         }
         
@@ -51,8 +50,8 @@
                 length: 255, 
                 id: false, 
                 nullable: false, 
-                default: null,
-                type: 'string'
+                type: 'string',
+                default: null
             });
         }
 
@@ -81,12 +80,16 @@
          */
         function getFieldNames() {
             // columnName => fieldName
-            var result = _.map(fields, function(value) {
-                var res = {};
-                res[value.columnName] = value.fieldName;
-                
-                return res;
-            });
+            var result = new Array();
+            for (var i = 0, len = fields.length; i < len; i++) {
+                var value = fields[i];
+                if (!value.id) {
+                    var res = {};
+                    res[value.columnName] = value.fieldName;
+                    
+                    result.push(res);
+                }
+            }
             
             return result;
         }
@@ -97,12 +100,44 @@
          */
         function getColumnNames() {
             // fieldName => columnName
-              var result = _.map(fields, function(value) {
-                var res = {};
-                res[value.fieldName] = value.columnName;
-                
-                return res;
+            var result = new Array();
+            for (var i = 0, len = fields.length; i < len; i++) {
+                var value = fields[i];
+                if (!value.id) {
+                    var res = {};
+                    res[value.fieldName] = value.columnName;
+                    
+                    result.push(res);
+                }
+            }
+            
+            return result;
+        }
+        
+        function getGeneratorType() {
+            var result = 0;
+            
+            var filterFields = _.filter(fields, function(value) {
+                return value.id;
             });
+            
+            if (filterFields.length > 0) {
+                result = filterFields[0].strategy;
+            }
+            
+            return result;
+        }
+        
+        function getIdentifier() {
+            var result = new Array();
+            
+            var filterFields = _.filter(fields, function(value) {
+                return value.id;
+            });
+            
+            for (var i = 0, len = filterFields.length; i < len; i++) {
+                result.push(filterFields[i].fieldName);
+            }
             
             return result;
         }
@@ -191,6 +226,8 @@
             findDefaultField: findDefaultField,
             getFieldNames: getFieldNames,
             getColumnNames: getColumnNames,
+            getGeneratorType: getGeneratorType,
+            getIdentifier: getIdentifier,
             existsByFieldName: existByFieldName,
             existsByTableName: existByTableName,
             add: addField,

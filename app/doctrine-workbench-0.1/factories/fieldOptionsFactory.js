@@ -17,12 +17,12 @@ DoctrineWorkbenchApp.factory('FieldOptionsFactory', function() {
         },
         getStrategies: function() {
             return [
-                {id: "AUTO", name: "AUTO"},
-                {id: "SEQUENCE", name: "SEQUENCE"},
-                {id: "TABLE", name: "TABLE"},
-                {id: "IDENTITY", name: "IDENTITY"},
-                {id: "UUID", name: "UUID"},
-                {id: "NONE", name: "NONE"}
+                {id: 1, name: "AUTO"},
+                {id: 2, name: "SEQUENCE"},
+                {id: 3, name: "TABLE"},
+                {id: 4, name: "IDENTITY"},
+                {id: 6, name: "UUID"},
+                {id: 5, name: "NONE"}
             ];
         }
     };

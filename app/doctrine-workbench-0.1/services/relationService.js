@@ -17,24 +17,25 @@
                 case 1:
                     return new OneToOneRelation(relation);
                 case 2:
-                   return new OneToManyRelation(relation);
-                case 3:
-                    return new ManyToManyRelation(relation);
-                case 4:
                     return new ManyToOneRelation(relation);
+                case 4:
+                   return new OneToManyRelation(relation);
+                case 8:
+                    return new ManyToManyRelation(relation);
                 default:
                     return null;
             }
         };
 
-        //function createRelation(id, type, sourceEntityId, targetEntityId, sourceField, targetField, relationOptions) {
-        //function createRelation(id, type, side, fieldName, targetEntity, cascade, sourceMappedFieldName, targetMappedFieldName) {
-        function createRelation(sourceId, targetId, type, cascade, source, target) {            
+        function createRelation(sourceId, targetId, type, cascade, source, target) { 
+            // fix many to one type
+            var sourceType = (2 == type) ? 4 : type;
+            
             var camelSourceEntityName = UtilsService.toCamelCase(source.name),
                 camelTargetEntityName = UtilsService.toCamelCase(target.name),
                 sourceRelationOptions = {
                     _id: sourceId,
-                    type: type,
+                    type: sourceType,
                     fieldName: camelTargetEntityName,
                     targetEntity: target.name,
                     mappedBy: camelSourceEntityName,
@@ -59,7 +60,7 @@
                 ];
             }
 
-            if (3 === type) {
+            if (8 === type) {
                 FieldService.load(source.fieldMappings);
                 var sourceDefaultFieldName = FieldService.findDefaultField().columnName;
                 FieldService.load(target.fieldMappings);

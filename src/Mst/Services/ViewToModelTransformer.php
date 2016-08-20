@@ -72,7 +72,7 @@ class ViewToModelTransformer
             $class->fieldNames = $entity['fieldNames'];
             $class->columnNames = $entity['columnNames'];
             $class->identifier = $entity['identifier'];
-            $class->generatorType = $this->getGeneratorType($entity['generatorType']);
+            $class->generatorType = $entity['generatorType'];
             $class->associationMappings = $entity['associationMappings'];
             
             $result[] = $class;
@@ -126,27 +126,5 @@ class ViewToModelTransformer
     protected function jsonDecode($data)
     {
         return json_decode($data, true);
-    }
-    
-    /**
-     * Gets Doctrine generatotType from UI strategy
-     * 
-     * @param string $strategy
-     * 
-     * @return int
-     */
-    protected function getGeneratorType($strategy)
-    {
-        $types = array(
-            'AUTO' => ClassMetadataInfo::GENERATOR_TYPE_AUTO
-        );
-        
-        $result = ClassMetadataInfo::GENERATOR_TYPE_NONE;
-        
-        if (array_key_exists($strategy, $types)) {
-            $result = $types[$strategy];
-        }
-        
-        return $result;
     }
 }

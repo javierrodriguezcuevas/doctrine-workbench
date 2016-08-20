@@ -86,6 +86,8 @@ DoctrineWorkbenchController.controller('ModalEditFieldsInstanceCtrl', [ '$scope'
         $scope.ok = function(form) {
             if (!form.$invalid) {
                 $modalInstance.close({
+                    identifier: FieldService.getIdentifier(),
+                    generatorType: FieldService.getGeneratorType(),
                     fieldMappings: FieldService.findAll(),
                     fieldNames: FieldService.getFieldNames(),
                     columnNames: FieldService.getColumnNames()

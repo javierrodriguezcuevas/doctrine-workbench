@@ -33,11 +33,11 @@
                 case 2: 
                     return 'oneToManyHover';
                 break;
-                case 3: 
-                    return 'manyToManyHover';
-                break;
                 case 4: 
                     return 'oneToManyHover';
+                break;
+                case 8: 
+                    return 'manyToManyHover';
                 break;
             }
             
@@ -59,8 +59,11 @@
                 case 'oneToManyHover':
                     relationType = 2;
                 break;
+                case 'oneToManyHover':
+                    relationType = 4;
+                break;
                 case 'manyToManyHover':
-                    relationType = 3;
+                    relationType = 8;
                 break;
             }
             
@@ -88,7 +91,13 @@
                         overlays: overlaysOneToMany
                     };
                 break;
-                case 3:
+                case 4:
+                    overlays = {
+                        hoverClass: 'oneToManyHover',
+                        overlays: overlaysOneToMany
+                    };
+                break;
+                case 8:
                     overlays = {
                         hoverClass: 'manyToManyHover',
                         overlays: overlaysManyToMany
