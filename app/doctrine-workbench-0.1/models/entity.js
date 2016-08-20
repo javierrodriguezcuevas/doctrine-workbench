@@ -4,14 +4,20 @@
  * @returns Entity
  */
 function Entity(data) {
-    this.id;
-    this.entityName;
-    this.tableName;
+    this._id;
+    this._x = 200;
+    this._y = 200;
+    this.name;
+    this.tableName = {
+        name: ''
+    };
     this.namespace;
-    this.x = 200;
-    this.y = 200;
-    this.fields = [];
-    this.relations = [];
+    this.fieldNames = [];
+    this.columnNames = [];
+    this.generatorType = null;
+    this.identifier = [];
+    this.fieldMappings = [];
+    this.associationMappings = [];
     
     for (var prop in data) {
         this[prop] = data[prop];

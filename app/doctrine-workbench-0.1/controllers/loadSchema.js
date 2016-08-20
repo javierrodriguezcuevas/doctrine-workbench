@@ -8,7 +8,6 @@ DoctrineWorkbenchController.controller('ModalLoadSchemaController', [ '$scope', 
 
         $scope.showTable = false;
         $scope.loading = false;
-        $scope.loadingGif = location.origin + location.pathname + 'dist/img/loading.gif';
 
         /**
          * Lists schemas

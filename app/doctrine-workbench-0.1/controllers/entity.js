@@ -16,13 +16,15 @@ DoctrineWorkbenchController.controller('ModalNewEditEntityInstanceCtrl', [ '$sco
         }
         
         $scope.updateTableName = function() {
-            var newValue = $scope.entity.entityName;
+            var newValue = $scope.entity.name;
             var oldValue = $scope.entity.tableName;
             
-            if (undefined === newValue ) {
-                $scope.entity.tableName = undefined;
+            if (undefined === newValue) {
+                $scope.entity.tableName = {
+                    'name': ''
+                };
             } else if ( UtilsService.toSnakeCase(newValue) !== oldValue ) {
-                $scope.entity.tableName = UtilsService.toSnakeCase(newValue);
+                $scope.entity.tableName.name = UtilsService.toSnakeCase(newValue);
             }
         };
 

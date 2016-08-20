@@ -12,11 +12,11 @@ use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 class ViewToModelTransformer
 {    
     /** @var array */
-    public static $_modelsTransformers = array(
-        'annotation' => 'Mst\Services\ModelTransformer\AnnotationModelTransformer',
+    public static $_supportedExports = array(
+        'annotation',
         // Not implemented yet
-        //'yaml' => 'Mst\Services\ModelTransformer\YamlModelTransformer',
-        //'yml' => 'Mst\Services\ModelTransformer\YamlModelTransformer',
+        //'yaml',
+        //'yml',
     );
     
     /**
@@ -26,59 +26,31 @@ class ViewToModelTransformer
      * @param string $type
      * @param string $dest
      * 
-     * @return void 
-     * 
-     * @throws ExportException
-     * @throws InvalidArgumentException
+     * @return $metadatas
      */
-    public function handleJsonData($jsonData, $type, $dest)
+    public function handleJsonData($jsonData)
     {
         $parsedData = $this->jsonDecode($jsonData);
-        $parsedDataArray = $this->parseJsonDataToArray($parsedData->entities, $parsedData->relations, $type);
-        $metadatas = $this->parseDataArrayToMetadatas($parsedDataArray);
-
-        $exporter = $this->getExporter($type, $dest);
-        $exporter->setMetadata($metadatas);
-        $exporter->export();
+        
+        return $this->parseDataArrayToMetadatas($parsedData);       
     }
     
     /**
-     * Parse stdObj entities from UI to an array of ClassMetadataInfo
+     * Export metadatas to files
      * 
-     * @param array $entities
-     * @param array $relations
-     * @param string $type
+     * @param type $metadatas
+     * @param type $type
+     * @param type $dest
      * 
-     * @return array
+     * @return void
      * 
-     * @throws \InvalidArgumentException
+     * @throws ExportException
      */
-    protected function parseJsonDataToArray(array $entities, array $relations, $type)
+    public function export($metadatas, $type, $dest)
     {
-        $result = array();
-        $transformer = $this->getModelTransformer($type);
-        $associationMappings = $transformer->generateAssociationMappings($entities, $relations);
-        
-        foreach ($entities as $entity) {
-            $fieldsMappings = $transformer->generateFieldsMappings($entity->fields);
-            $result[$entity->id] = array(
-                'entityName' => $entity->entityName,
-                'tableName' => array('name' => $entity->tableName),
-                'namespace' => $entity->namespace,
-                'fieldMappings' => $fieldsMappings['fieldMappings'],
-                'fieldNames' => $fieldsMappings['fieldNames'],
-                'columnNames' => $fieldsMappings['columnNames'],
-                'generatorType' => $fieldsMappings['generatorType'],
-                'identifier' => $fieldsMappings['identifier'],
-                'associationMappings' => array(),
-            );
-            
-            foreach ($entity->relations as $relation) {
-                $result[$entity->id]['associationMappings'][] = $associationMappings[$relation][$entity->id];
-            }
-        }
-        
-        return $result;
+        $exporter = $this->getExporter($type, $dest);
+        $exporter->setMetadata($metadatas);
+        $exporter->export();
     }
     
     /**
@@ -91,8 +63,9 @@ class ViewToModelTransformer
     protected function parseDataArrayToMetadatas(array $data)
     {
         $result = array();
-        foreach ($data as $entity) {
-            $class = new ClassMetadataInfo($entity['namespace'].'\\'.$entity['entityName']);
+        
+        foreach ($data['entities'] as $entity) {
+            $class = new ClassMetadataInfo($entity['namespace'].'\\'.$entity['name']);
 
             $class->table = $entity['tableName'];
             $class->fieldMappings = $entity['fieldMappings'];
@@ -120,7 +93,7 @@ class ViewToModelTransformer
      */
     protected function getExporter($type, $dest = null)
     {
-        if (!array_key_exists($type, self::$_modelsTransformers)) {
+        if (!in_array($type, self::$_supportedExports)) {
             throw new \InvalidArgumentException("Unsuported Exporter type: '$type'.");
         }
         
@@ -144,26 +117,6 @@ class ViewToModelTransformer
     }
     
     /**
-     * Get a model transformer instance
-     * 
-     * @param type $type The type to get (annotation, yml)
-     * 
-     * @return ModelTransformer
-     * 
-     * @throws \InvalidArgumentException
-     */
-    protected function getModelTransformer($type)
-    {
-        if ( ! isset(self::$_modelsTransformers[$type])) {
-            throw new \InvalidArgumentException("Unsuported ModelTransformer type: '$type'.");
-        }
-
-        $class = self::$_modelsTransformers[$type];
-
-        return new $class();
-    }
-    
-    /**
      * Converts a json string to a stdObj
      * 
      * @param string $data
@@ -172,6 +125,6 @@ class ViewToModelTransformer
      */
     protected function jsonDecode($data)
     {
-        return json_decode($data);
+        return json_decode($data, true);
     }
 }

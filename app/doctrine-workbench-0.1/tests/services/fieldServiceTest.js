@@ -10,7 +10,7 @@ describe('FieldServiceTest', function() {
         var fields = new Array();
         
         for (var i = 1; i < 4; i++) {
-            fields.push(fieldService.createEmptyField(i, "fieldName" + i, "tableName" + i));
+            fields.push(fieldService.createEmptyField(i, "fieldName" + i, "table_name_" + i));
         }
         
         fieldService.load(fields);
@@ -20,7 +20,7 @@ describe('FieldServiceTest', function() {
         var fields = new Array();
         
         for (var i = 1; i < 6; i++) {
-            fields.push(fieldService.createEmptyField(i, "fieldName" + i, "tableName" + i));
+            fields.push(fieldService.createEmptyField(i, "fieldName" + i, "table_name_" + i));
         }
         
         fieldService.load(fields);
@@ -35,7 +35,7 @@ describe('FieldServiceTest', function() {
     
     it('should return default Field', function() {
         var field = fieldService.findDefaultField();
-        expect(field.id).toEqual(1);
+        expect(field._id).toEqual(1);
     });
     
     it('should not return default Field', function() {
@@ -48,22 +48,37 @@ describe('FieldServiceTest', function() {
     it('should return Field with id 1', function() {
         var id = 1;
         var field = fieldService.findById(id);
-        expect(field.id).toEqual(id);
+        expect(field._id).toEqual(id);
     });
     
     it('should exist Field by fieldName', function() {
-        var fieldName = "fieldName1";
-        expect(fieldService.existsByFieldName(fieldName)).toEqual(true);
+        var fieldName1 = "fieldName1";
+        var fieldName2 = "fieldname1";
+        var fieldName3 = "FieldName1";
+        var fieldName4 = "Fieldname1";
+        
+        expect(fieldService.existsByFieldName(fieldName1)).toEqual(true);
+        expect(fieldService.existsByFieldName(fieldName2)).toEqual(true);
+        expect(fieldService.existsByFieldName(fieldName3)).toEqual(true);
+        expect(fieldService.existsByFieldName(fieldName4)).toEqual(true);
     });
     
     it('should not exist Field by fieldName', function() {
         var fieldName = "fieldNameFoo";
+        
         expect(fieldService.existsByFieldName(fieldName)).toEqual(false);
     });
     
     it('should exist Field by tableName', function() {
-        var tableName = "tableName1";
-        expect(fieldService.existsByTableName(tableName)).toEqual(true);
+        var tableName1 = "table_Name_1";
+        var tableName2 = "table_name_1";
+        var tableName3 = "Table_Name_1";
+        var tableName4 = "Table_name_1";
+        
+        expect(fieldService.existsByTableName(tableName1)).toEqual(true);
+        expect(fieldService.existsByTableName(tableName2)).toEqual(true);
+        expect(fieldService.existsByTableName(tableName3)).toEqual(true);
+        expect(fieldService.existsByTableName(tableName4)).toEqual(true);
     });
     
     it('should not exist Field by tableName', function() {
@@ -74,36 +89,30 @@ describe('FieldServiceTest', function() {
     it('should create a pk Field and return it', function() {
         var id = 5;
         var field = fieldService.createEmptyPkField(id, "fieldName5", "tableName5");
-        expect(field.id).toEqual(id);
+        expect(field._id).toEqual(id);
     });
     
     it('should create an empty Field and return it', function() {
         var id = 5;
         var field = fieldService.createEmptyField(id, "fieldName5", "tableName5");
-        expect(field.id).toEqual(id);
-    });
-    
-    it('should create a Relation Field and return it', function() {
-        var id = 5;
-        var field = fieldService.createRelationField(id, "fieldName5", 42);
-        expect(field.id).toEqual(id);
+        expect(field._id).toEqual(id);
     });
     
     it('should create a Field, add to collection and return it', function() {
         var id = 5;
-        fieldService.add(fieldService.createRelationField(id, "fieldName5", 42));
+        fieldService.add(fieldService.createEmptyField(id, "fieldName5", 42));
         var field = fieldService.findById(id);
-        expect(field.id).toEqual(id);
+        expect(field._id).toEqual(id);
     });
     
     it('should update a Field and return it updated', function() {
         var id = 1;
         var fooName = "entityNameFoo";
         var field = fieldService.findById(id);
-        field.name = fooName;
+        field.fieldName = fooName;
         fieldService.update(field);
         field = fieldService.findById(id);
-        expect(field.name).toEqual(fooName);
+        expect(field.fieldName).toEqual(fooName);
     });
     
     it('should remove a Field', function() {
@@ -113,4 +122,15 @@ describe('FieldServiceTest', function() {
         expect(fieldService.findAll().length).toEqual(2);
     });
     
+    it('should return fieldNames', function() {
+        var fieldNames = fieldService.getFieldNames();
+        
+        expect(fieldNames).toEqual([{ table_name_1: 'fieldName1' }, { table_name_2: 'fieldName2' }, { table_name_3: 'fieldName3' }]);
+    });
+    
+    it('should return columnNames', function() {
+        var columnNames = fieldService.getColumnNames();
+        
+        expect(columnNames).toEqual([{ fieldName1: 'table_name_1' }, { fieldName2: 'table_name_2' }, { fieldName3: 'table_name_3' }]);
+    });
 });

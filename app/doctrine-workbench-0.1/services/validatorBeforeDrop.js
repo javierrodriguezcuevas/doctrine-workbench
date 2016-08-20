@@ -2,8 +2,8 @@
  
 (function () {
  
-    DoctrineWorkbenchApp.service('ValidatorBeforeDrop', ['EntityService', 'RelationService', 'UtilsService', '$translate',
-        function (EntityService, RelationService, UtilsService, $translate) {
+    DoctrineWorkbenchApp.service('ValidatorBeforeDrop', ['EntityService', 'ConnectionService', 'UtilsService', '$translate',
+        function (EntityService, ConnectionService, UtilsService, $translate) {
         
         /**
          * 
@@ -21,14 +21,14 @@
             }
             
             // exist relation between source and target
-            if (RelationService.existsRelation(sourceId, targetId)) {
-                UtilsService.bsalert($translate.instant('error.relation.no_fields'));
+            if (ConnectionService.existsRelation(sourceId, targetId)) {
+                UtilsService.bsalert($translate.instant('error.relation.exists'));
                 result = false;
             }
 
             // no fields in target
             var target = EntityService.findById(targetId);
-            if (0 == target.fields.length) {
+            if (0 == target.fieldMappings.length) {
                 UtilsService.bsalert($translate.instant('error.relation.no_fields'));
                 result = false;
             }

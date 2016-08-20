@@ -25,6 +25,11 @@
     box-shadow: rgba(0, 0, 0, 0.0745098) 0px 0px 0px 0px inset, rgba(0, 0, 0, 0.54902) 0px 0px 7px 0px;
     -webkit-box-shadow: rgba(0, 0, 0, 0.0745098) 0px 0px 0px 0px inset, rgba(0, 0, 0, 0.54902) 0px 0px 7px 0px;
 }
+.loading-button {
+    font-size: 40px;
+    border: none;
+    width: 45px;
+}
 .input-xs {
     height: 22px;
     padding: 2px 8px;

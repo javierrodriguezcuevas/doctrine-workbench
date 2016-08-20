@@ -1,5 +1,15 @@
 'use strict';
 
+(function(lodash){
+    // Changelog
+    // v4.0.0
+    // Jan. 12, 2016 — Diff — Docs
+    // Removed _.contains in favor of _.includes
+    if (!lodash.contains) {
+        lodash.contains = lodash.includes;
+    }
+})(_);
+
 var connectorCommonOptions = {
     connector: ["Flowchart", {cornerRadius: 5}],
     connectionsDetachable: false,

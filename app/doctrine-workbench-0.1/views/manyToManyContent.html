@@ -6,8 +6,8 @@
     <label class="col-lg-4 col-md-4 control-label">{{ 'label.middle_tablename' | translate }}</label>
     <div class="col-lg-8 col-md-8">
         <input type="text" name="entityName" class="form-control" placeholder="Nombre de la tabla"
-            ng-model="relation.tableName"
-            ng-required="relation.type == 3"
+            ng-model="sourceRelation.joinTable.name"
+            ng-required="type == 3"
             ng-maxlength="255"
         />
         <p class="help-block error" 
@@ -32,8 +32,8 @@
         <label class="col-lg-4 col-md-4 control-label">{{ 'label.related_field' | translate }}</label>
         <div class="col-lg-8 col-md-8">
             <select class="form-control" name="targetRelatedFieldId" 
-                    ng-model="relation.targetRelatedFieldId"
-                    ng-options="t.id as t.name for t in fieldsTarget"
+                    ng-model="sourceRelation.joinTable.joinColumns[0].referencedColumnName"
+                    ng-options="t.fieldName as t.fieldName for t in fieldsTarget"
                     >
             </select>
         </div>
@@ -45,7 +45,7 @@
             ng-class="{ 'has-error': form.sourceFieldName.$invalid && form.sourceFieldName.$dirty }"
             >
             <input type="text" name="sourceFieldName"  class="form-control"
-                   ng-model="relation.sourceField.name"
+                   ng-model="sourceRelation.fieldName"
                    ng-required="true"
                    ng-maxlength="255"
             />
@@ -61,31 +61,10 @@
     </div>
     
     <div class="form-group">
-        <label class="col-lg-4 col-md-4 control-label">{{ 'label.name_database' | translate }}</label>
-        <div class="col-lg-8 col-md-8"
-            ng-class="{ 'has-error': form.sourceFieldTableName.$invalid && form.sourceFieldTableName.$dirty }"
-            >
-            <input type="text" name="sourceFieldTableName"  class="form-control"
-                   ng-model="relation.sourceField.tableName"
-                   ng-required="true"
-                   ng-maxlength="255"
-            />
-            <p class="help-block error" 
-                ng-show="form.sourceFieldTableName.$error.required 
-                && form.sourceFieldTableName.$invalid 
-                && form.sourceFieldTableName.$dirty">{{ 'error.required' | translate }}</p>
-            <p class="help-block error" 
-                ng-show="form.sourceFieldTableName.$error.maxlength 
-                && form.sourceFieldTableName.$invalid 
-                && form.sourceFieldTableName.$dirty">{{ 'error.maxlength' | translate }}</p>
-        </div>
-    </div>
-    
-    <div class="form-group">
         <label class="col-lg-4 col-md-4 control-label">{{ 'label.cascade_options' | translate }}</label>
         <div class="col-lg-8 col-md-8">
             <div ng-dropdown-multiselect="" options="cascadeOptions" 
-            selected-model="relation.cascadeOptions" 
+            selected-model="sourceRelation.cascade" 
             extra-settings="multiselectSettings"
             translation-texts="multiselectTextSettings"></div>
         </div>
@@ -101,8 +80,8 @@
         <label class="col-lg-4 col-md-4 control-label">{{ 'label.related_field' | translate }}</label>
         <div class="col-lg-8 col-md-8">
             <select class="form-control" name="sourceRelatedFieldId"
-                    ng-model="relation.sourceRelatedFieldId"
-                    ng-options="t.id as t.name for t in fieldsSource"
+                    ng-model="sourceRelation.joinTable.inverseJoinColumns[0].referencedColumnName"
+                    ng-options="t.fieldName as t.fieldName for t in fieldsSource"
                     >
             </select>
         </div>
@@ -114,7 +93,7 @@
             ng-class="{ 'has-error': form.targetFieldName.$invalid && form.targetFieldName.$dirty }"
             >
             <input type="text" name="targetFieldName"  class="form-control"
-                   ng-model="relation.targetField.name"
+                   ng-model="targetRelation.fieldName"
                    ng-required="true"
                    ng-maxlength="255"
             />
@@ -126,27 +105,6 @@
                 ng-show="form.targetFieldName.$error.maxlength 
                 && form.targetFieldName.$invalid 
                 && form.targetFieldName.$dirty">{{ 'error.maxlength' | translate }}</p>
-        </div>
-    </div>
-    
-    <div class="form-group">
-        <label class="col-lg-4 col-md-4 control-label">{{ 'label.name_database' | translate }}</label>
-        <div class="col-lg-8 col-md-8"
-            ng-class="{ 'has-error': form.targetFieldTableName.$invalid && form.targetFieldTableName.$dirty }"
-            >
-            <input type="text" name="targetFieldTableName"  class="form-control"
-                   ng-model="relation.targetField.tableName"
-                   ng-required="relation.type != 3"
-                   ng-maxlength="255"
-            />
-            <p class="help-block error" 
-                ng-show="form.targetFieldTableName.$error.required 
-                && form.targetFieldTableName.$invalid 
-                && form.targetFieldTableName.$dirty">{{ 'error.required' | translate }}</p>
-            <p class="help-block error" 
-                ng-show="form.targetFieldTableName.$error.maxlength 
-                && form.targetFieldTableName.$invalid 
-                && form.targetFieldTableName.$dirty">{{ 'error.maxlength' | translate }}</p>
         </div>
     </div>
 </fieldset>

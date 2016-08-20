@@ -4,11 +4,11 @@ describe('ValidatorBeforeDropTest', function() {
     var validatorBeforeDrop;
     
     beforeEach(module('DoctrineWorkbenchApp'));
-    beforeEach(inject(function (_ValidatorBeforeDrop_, _EntityService_, _RelationService_) {
+    beforeEach(inject(function (_ValidatorBeforeDrop_, _EntityService_, _ConnectionService_) {
         validatorBeforeDrop = _ValidatorBeforeDrop_;
         
-        spyOn(_EntityService_, 'findById').and.returnValue({'fields': new Array()});
-        spyOn(_RelationService_, 'existsRelation').and.returnValue(true);
+        spyOn(_EntityService_, 'findById').and.returnValue({'fieldMappings': new Array()});
+        spyOn(_ConnectionService_, 'existsRelation').and.returnValue(true);
     }));
     
     it('should return false because same entity', function() {

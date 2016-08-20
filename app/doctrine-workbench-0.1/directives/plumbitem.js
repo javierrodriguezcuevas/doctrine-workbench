@@ -23,8 +23,8 @@
                     jsPlumb.draggable(element, {
                         handle: '.item-move',
                         stop: function(e) {
-                            scope.entity.x = e.pos[0];
-                            scope.entity.y = e.pos[1];
+                            scope.entity._x = e.pos[0];
+                            scope.entity._y = e.pos[1];
                         }
                     });
                 }, 0);
