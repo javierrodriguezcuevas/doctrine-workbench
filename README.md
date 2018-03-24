@@ -11,22 +11,19 @@ Installation
 
 > cd doctrine-workbench
 
+> docker-compose up
+
 > composer install
 
-> npm install
+> yarn install
 
-> grunt
+> yarn run gulp
 
 > bin/console doctrine:database:create
 
 > bin/console doctrine:schema:load
 
 > bin/console fixture:load
-
-Demo
-----
-
-http://doctrineworkbench-jrodriguez.rhcloud.com/
 
 Tests
 -----
@@ -35,7 +32,7 @@ Tests
 > - phpunit --bootstrap src\Mst\Tests\bootstrap.php src\Mst\Tests
 
 >**AngularJS**
-> - grunt test
+> - yarn run gulp test
 
 TODO
 ----

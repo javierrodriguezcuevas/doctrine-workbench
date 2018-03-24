@@ -1,0 +1,30 @@
+version: "3.2"
+
+services:
+    php:
+        container_name: doctrine_workbench_php
+        build: docker/php
+        environment:
+            - DATABASE_HOST=doctrine_workbench_mysql # mysql container name
+            - DATABASE_NAME=dev
+            - DATABASE_PASSWORD=dev
+            - DATABASE_PORT=3306
+            - DATABASE_USER=dev
+        links:
+            - mysql
+        ports:
+            - "8000:8000"
+        volumes:
+            - ./:/var/www/html
+        working_dir: /var/www/html
+
+    mysql:
+        container_name: doctrine_workbench_mysql
+        image: mariadb:latest
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: dev
+            MYSQL_USER: dev
+            MYSQL_PASSWORD: dev
+        volumes:
+            - ./docker/mysql/data:/var/lib/mysql

@@ -16,7 +16,7 @@ module.exports = function(config) {
     files: [
         'node_modules/jquery/dist/jquery.min.js',
         'node_modules/bootstrap/dist/js/bootstrap.min.js',
-        'app/jquery-ui-1.9.2/jquery-ui.min.js',
+        'node_modules/jquery-ui-dist/jquery-ui.min.js',
         'node_modules/bootbox/bootbox.js',
         'node_modules/jsplumb/dist/js/jsPlumb-2.0.7.js',
         'node_modules/bootstrap-slider/dist/bootstrap-slider.min.js',
